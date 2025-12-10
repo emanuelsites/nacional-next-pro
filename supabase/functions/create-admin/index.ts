@@ -27,19 +27,24 @@ Deno.serve(async (req) => {
     })
 
     if (createError) {
-      // If user already exists, try to get them
+      // If user already exists, try to get them and reset password
       if (createError.message.includes('already been registered')) {
         const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers()
         const existingUser = existingUsers?.users?.find(u => u.email === 'francilene@nacionaltreinamentos.com.br')
         
         if (existingUser) {
+          // Reset password to ensure it's correct
+          await supabaseAdmin.auth.admin.updateUserById(existingUser.id, {
+            password: 'francilene2026@'
+          })
+          
           // Set as admin
           await supabaseAdmin
             .from('user_roles')
             .upsert({ user_id: existingUser.id, role: 'admin' }, { onConflict: 'user_id,role' })
 
           return new Response(
-            JSON.stringify({ message: 'User already exists, set as admin', userId: existingUser.id }),
+            JSON.stringify({ message: 'User already exists, password reset and set as admin', userId: existingUser.id }),
             { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
           )
         }
