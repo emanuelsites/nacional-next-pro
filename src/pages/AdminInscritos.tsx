@@ -39,20 +39,43 @@ export default function AdminInscritos() {
   };
 
   const handleExportCSV = () => {
-    const headers = ['Nome', 'Tipo', 'Curso', 'Email', 'Telefone', 'Cidade', 'UF', 'Data'];
+    const headers = [
+      'Nome/Empresa', 'Tipo', 'CPF/CNPJ', 'RG', 'Data Nascimento', 
+      'Cargo', 'Matrícula', 'Setor', 'Curso', 'Email', 
+      'Telefone Fixo', 'Celular', 'CEP', 'Endereço', 'Número',
+      'Complemento', 'Bairro', 'Cidade', 'UF',
+      'Responsável', 'Cargo Responsável', 'Tel. Responsável', 'Email Responsável',
+      'Data Inscrição'
+    ];
     const rows = filteredEnrollments.map(e => [
       e.nome_completo || e.nome_empresa || '',
       e.enrollment_type === 'pessoa_fisica' ? 'Pessoa Física' : 'Pessoa Jurídica',
+      e.cpf || e.cnpj || '',
+      e.rg || '',
+      e.data_nascimento || '',
+      e.cargo || '',
+      e.matricula || '',
+      e.setor || '',
       e.course_name,
       e.email,
+      e.telefone_fixo || '',
       e.telefone_celular,
+      e.cep || '',
+      e.endereco || '',
+      e.numero || '',
+      e.complemento || '',
+      e.bairro || '',
       e.cidade || '',
       e.uf || '',
+      e.responsavel_nome || '',
+      e.responsavel_cargo || '',
+      e.responsavel_telefone || '',
+      e.responsavel_email || '',
       e.created_at ? new Date(e.created_at).toLocaleDateString('pt-BR') : '',
     ]);
 
-    const csvContent = [headers.join(','), ...rows.map(r => r.map(c => `"${c}"`).join(','))].join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const csvContent = [headers.join(';'), ...rows.map(r => r.map(c => `"${c}"`).join(';'))].join('\n');
+    const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
     link.download = `inscritos_${new Date().toISOString().split('T')[0]}.csv`;

@@ -113,19 +113,30 @@ export type Database = {
       enrollments: {
         Row: {
           bairro: string | null
+          cargo: string | null
           cep: string | null
           cidade: string | null
           cnpj: string | null
+          complemento: string | null
           course_id: string | null
           course_name: string
           cpf: string | null
           created_at: string | null
+          data_nascimento: string | null
           email: string
           endereco: string | null
           enrollment_type: string
           id: string
+          matricula: string | null
           nome_completo: string | null
           nome_empresa: string | null
+          numero: string | null
+          responsavel_cargo: string | null
+          responsavel_email: string | null
+          responsavel_nome: string | null
+          responsavel_telefone: string | null
+          rg: string | null
+          setor: string | null
           status: string | null
           telefone_celular: string
           telefone_fixo: string | null
@@ -133,19 +144,30 @@ export type Database = {
         }
         Insert: {
           bairro?: string | null
+          cargo?: string | null
           cep?: string | null
           cidade?: string | null
           cnpj?: string | null
+          complemento?: string | null
           course_id?: string | null
           course_name: string
           cpf?: string | null
           created_at?: string | null
+          data_nascimento?: string | null
           email: string
           endereco?: string | null
           enrollment_type: string
           id?: string
+          matricula?: string | null
           nome_completo?: string | null
           nome_empresa?: string | null
+          numero?: string | null
+          responsavel_cargo?: string | null
+          responsavel_email?: string | null
+          responsavel_nome?: string | null
+          responsavel_telefone?: string | null
+          rg?: string | null
+          setor?: string | null
           status?: string | null
           telefone_celular: string
           telefone_fixo?: string | null
@@ -153,19 +175,30 @@ export type Database = {
         }
         Update: {
           bairro?: string | null
+          cargo?: string | null
           cep?: string | null
           cidade?: string | null
           cnpj?: string | null
+          complemento?: string | null
           course_id?: string | null
           course_name?: string
           cpf?: string | null
           created_at?: string | null
+          data_nascimento?: string | null
           email?: string
           endereco?: string | null
           enrollment_type?: string
           id?: string
+          matricula?: string | null
           nome_completo?: string | null
           nome_empresa?: string | null
+          numero?: string | null
+          responsavel_cargo?: string | null
+          responsavel_email?: string | null
+          responsavel_nome?: string | null
+          responsavel_telefone?: string | null
+          rg?: string | null
+          setor?: string | null
           status?: string | null
           telefone_celular?: string
           telefone_fixo?: string | null
