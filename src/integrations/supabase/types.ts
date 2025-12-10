@@ -52,7 +52,7 @@ export type Database = {
           active: boolean | null
           category: string
           certificate: boolean | null
-          content: string[] | null
+          content: string | null
           course_date: string | null
           created_at: string | null
           duration: string | null
@@ -72,7 +72,7 @@ export type Database = {
           active?: boolean | null
           category?: string
           certificate?: boolean | null
-          content?: string[] | null
+          content?: string | null
           course_date?: string | null
           created_at?: string | null
           duration?: string | null
@@ -92,7 +92,7 @@ export type Database = {
           active?: boolean | null
           category?: string
           certificate?: boolean | null
-          content?: string[] | null
+          content?: string | null
           course_date?: string | null
           created_at?: string | null
           duration?: string | null

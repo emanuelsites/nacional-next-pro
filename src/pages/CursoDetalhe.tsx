@@ -7,7 +7,7 @@ import WhatsAppButton from '@/components/WhatsAppButton';
 import EnrollmentModal from '@/components/EnrollmentModal';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Clock, MapPin, User, Award, CheckCircle, ArrowLeft, Calendar } from 'lucide-react';
+import { Clock, MapPin, User, Award, ArrowLeft, Calendar } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { fetchCourseById, Course } from '@/lib/api';
 
@@ -75,24 +75,23 @@ export default function CursoDetalhe() {
               <div className="lg:col-span-2 space-y-8">
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
                   <h2 className="text-2xl font-bold text-foreground mb-4">Sobre o Curso</h2>
-                  <div className="text-muted-foreground leading-relaxed whitespace-pre-line">
-                    {course.full_description?.split(/\*\*(.*?)\*\*/g).map((part, index) => 
-                      index % 2 === 1 ? <strong key={index} className="text-foreground">{part}</strong> : part
-                    )}
-                  </div>
+                  {course.full_description && (
+                    <div 
+                      className="text-muted-foreground leading-relaxed prose prose-gray max-w-none"
+                      dangerouslySetInnerHTML={{ __html: course.full_description }}
+                    />
+                  )}
                 </motion.div>
 
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-                  <h2 className="text-2xl font-bold text-foreground mb-4">Conteúdo Programático</h2>
-                  <ul className="space-y-3">
-                    {course.content?.map((item, index) => (
-                      <li key={index} className="flex items-start gap-3">
-                        <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-                        <span className="text-muted-foreground">{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </motion.div>
+                {course.content && (
+                  <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+                    <h2 className="text-2xl font-bold text-foreground mb-4">Conteúdo Programático</h2>
+                    <div 
+                      className="text-muted-foreground leading-relaxed prose prose-gray max-w-none"
+                      dangerouslySetInnerHTML={{ __html: course.content }}
+                    />
+                  </motion.div>
+                )}
               </div>
 
               <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}>

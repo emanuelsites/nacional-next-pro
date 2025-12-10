@@ -47,7 +47,7 @@ export default function CourseFormModal({ isOpen, onClose, course }: CourseFormM
         title: course.title || '',
         short_description: course.short_description || '',
         full_description: course.full_description || '',
-        content: course.content?.join('\n') || '',
+        content: course.content || '',
         category: course.category || 'Licitações / Contratos',
         location: course.location || '',
         course_date: course.course_date || '',
@@ -108,15 +108,10 @@ export default function CourseFormModal({ isOpen, onClose, course }: CourseFormM
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    const courseData = {
-      ...formData,
-      content: formData.content.split('\n').filter(line => line.trim()),
-    };
-
     if (isEditing && course) {
-      updateMutation.mutate({ id: course.id, data: courseData });
+      updateMutation.mutate({ id: course.id, data: formData });
     } else {
-      createMutation.mutate(courseData as any);
+      createMutation.mutate(formData as any);
     }
   };
 
