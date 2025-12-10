@@ -75,7 +75,11 @@ export default function CursoDetalhe() {
               <div className="lg:col-span-2 space-y-8">
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
                   <h2 className="text-2xl font-bold text-foreground mb-4">Sobre o Curso</h2>
-                  <p className="text-muted-foreground leading-relaxed">{course.full_description}</p>
+                  <div className="text-muted-foreground leading-relaxed whitespace-pre-line">
+                    {course.full_description?.split(/\*\*(.*?)\*\*/g).map((part, index) => 
+                      index % 2 === 1 ? <strong key={index} className="text-foreground">{part}</strong> : part
+                    )}
+                  </div>
                 </motion.div>
 
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
