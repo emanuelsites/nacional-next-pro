@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import WhatsAppButton from '@/components/WhatsAppButton';
@@ -8,13 +9,24 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Clock, MapPin, User, Award, CheckCircle, ArrowLeft, Calendar } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useData } from '@/contexts/DataContext';
+import { fetchCourseById, Course } from '@/lib/api';
 
 export default function CursoDetalhe() {
   const { id } = useParams();
-  const { courses } = useData();
-  const course = courses.find(c => c.id === id);
+  const { data: course, isLoading } = useQuery<Course | null>({
+    queryKey: ['course', id],
+    queryFn: () => fetchCourseById(id!),
+    enabled: !!id,
+  });
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   if (!course) {
     return (
@@ -33,9 +45,12 @@ export default function CursoDetalhe() {
     <div className="min-h-screen bg-background">
       <Header />
       <main>
-        {/* Hero */}
         <section className="relative h-[50vh] min-h-[400px]">
-          <img src={course.image} alt={course.title} className="w-full h-full object-cover" />
+          <img 
+            src={course.image_url || 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1920&q=80'} 
+            alt={course.title} 
+            className="w-full h-full object-cover" 
+          />
           <div className="absolute inset-0 bg-gradient-to-t from-foreground via-foreground/70 to-foreground/30" />
           <div className="absolute inset-0 flex items-end">
             <div className="container mx-auto px-4 pb-12">
@@ -54,21 +69,19 @@ export default function CursoDetalhe() {
           </div>
         </section>
 
-        {/* Content */}
         <section className="py-16">
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-              {/* Main Content */}
               <div className="lg:col-span-2 space-y-8">
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
                   <h2 className="text-2xl font-bold text-foreground mb-4">Sobre o Curso</h2>
-                  <p className="text-muted-foreground leading-relaxed">{course.fullDescription}</p>
+                  <p className="text-muted-foreground leading-relaxed">{course.full_description}</p>
                 </motion.div>
 
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
                   <h2 className="text-2xl font-bold text-foreground mb-4">Conteúdo Programático</h2>
                   <ul className="space-y-3">
-                    {course.content.map((item, index) => (
+                    {course.content?.map((item, index) => (
                       <li key={index} className="flex items-start gap-3">
                         <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                         <span className="text-muted-foreground">{item}</span>
@@ -78,11 +91,10 @@ export default function CursoDetalhe() {
                 </motion.div>
               </div>
 
-              {/* Sidebar */}
               <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}>
                 <div className="bg-card rounded-2xl p-6 shadow-card border border-border sticky top-24 space-y-6">
                   <div className="space-y-4">
-                    <div className="flex items-center gap-3"><Calendar className="w-5 h-5 text-primary" /><div><p className="text-sm text-muted-foreground">Data</p><p className="font-medium">{course.date}</p></div></div>
+                    <div className="flex items-center gap-3"><Calendar className="w-5 h-5 text-primary" /><div><p className="text-sm text-muted-foreground">Data</p><p className="font-medium">{course.course_date}</p></div></div>
                     <div className="flex items-center gap-3"><Clock className="w-5 h-5 text-primary" /><div><p className="text-sm text-muted-foreground">Carga Horária</p><p className="font-medium">{course.duration}</p></div></div>
                     <div className="flex items-center gap-3"><MapPin className="w-5 h-5 text-primary" /><div><p className="text-sm text-muted-foreground">Local</p><p className="font-medium">{course.location}</p></div></div>
                     <div className="flex items-center gap-3"><User className="w-5 h-5 text-primary" /><div><p className="text-sm text-muted-foreground">Instrutor</p><p className="font-medium">{course.instructor}</p></div></div>

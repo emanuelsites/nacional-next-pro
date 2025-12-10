@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import WhatsAppButton from '@/components/WhatsAppButton';
@@ -10,12 +11,15 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useData } from '@/contexts/DataContext';
+import { fetchActiveCourses, Course } from '@/lib/api';
 
 const Index = () => {
-  const { courses } = useData();
-  const featuredCourses = courses.filter(c => c.featured && c.active);
-  const allActiveCourses = courses.filter(c => c.active).slice(0, 6);
+  const { data: courses = [] } = useQuery<Course[]>({ 
+    queryKey: ['active-courses'], 
+    queryFn: fetchActiveCourses 
+  });
+
+  const featuredCourses = courses.filter(c => c.featured);
 
   return (
     <div className="min-h-screen bg-background">
@@ -42,7 +46,7 @@ const Index = () => {
             </motion.div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {featuredCourses.map((course, index) => (
+              {featuredCourses.slice(0, 3).map((course, index) => (
                 <CourseCard key={course.id} course={course} index={index} />
               ))}
             </div>

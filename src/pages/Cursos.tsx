@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import WhatsAppButton from '@/components/WhatsAppButton';
@@ -7,18 +8,20 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useData } from '@/contexts/DataContext';
-import { categories } from '@/data/courses';
+import { fetchActiveCourses, categories, Course } from '@/lib/api';
 
 export default function Cursos() {
-  const { courses } = useData();
+  const { data: courses = [] } = useQuery<Course[]>({ 
+    queryKey: ['active-courses'], 
+    queryFn: fetchActiveCourses 
+  });
+  
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Todos');
 
   const filteredCourses = courses.filter(course => {
-    if (!course.active) return false;
     const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      course.shortDescription.toLowerCase().includes(searchTerm.toLowerCase());
+      (course.short_description?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false);
     const matchesCategory = selectedCategory === 'Todos' || course.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
@@ -27,7 +30,6 @@ export default function Cursos() {
     <div className="min-h-screen bg-background">
       <Header />
       <main>
-        {/* Hero */}
         <section className="gradient-primary py-20">
           <div className="container mx-auto px-4 text-center">
             <motion.h1
@@ -48,7 +50,6 @@ export default function Cursos() {
           </div>
         </section>
 
-        {/* Filters */}
         <section className="py-8 bg-muted border-b border-border">
           <div className="container mx-auto px-4">
             <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
@@ -77,7 +78,6 @@ export default function Cursos() {
           </div>
         </section>
 
-        {/* Courses Grid */}
         <section className="py-16">
           <div className="container mx-auto px-4">
             {filteredCourses.length > 0 ? (
