@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Clock, MapPin, User, Calendar } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { Course } from '@/data/courses';
+import { Course } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
@@ -19,16 +19,14 @@ export default function CourseCard({ course, index = 0 }: CourseCardProps) {
       viewport={{ once: true }}
       className="group bg-card rounded-2xl overflow-hidden shadow-card card-hover border border-border"
     >
-      {/* Image */}
       <div className="relative h-48 overflow-hidden">
         <img
-          src={course.image}
+          src={course.image_url || 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800&q=80'}
           alt={course.title}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 to-transparent" />
         
-        {/* Badges */}
         <div className="absolute top-4 left-4 flex gap-2">
           <Badge className={`${
             course.modality === 'Online' 
@@ -46,16 +44,14 @@ export default function CourseCard({ course, index = 0 }: CourseCardProps) {
           )}
         </div>
         
-        {/* Date */}
         <div className="absolute bottom-4 left-4 right-4">
           <div className="flex items-center gap-2 text-background text-sm">
             <Calendar className="w-4 h-4" />
-            <span>{course.date}</span>
+            <span>{course.course_date}</span>
           </div>
         </div>
       </div>
 
-      {/* Content */}
       <div className="p-6 space-y-4">
         <div>
           <p className="text-sm text-primary font-medium mb-2">{course.category}</p>
@@ -65,10 +61,9 @@ export default function CourseCard({ course, index = 0 }: CourseCardProps) {
         </div>
 
         <p className="text-muted-foreground text-sm line-clamp-2">
-          {course.shortDescription}
+          {course.short_description}
         </p>
 
-        {/* Meta Info */}
         <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
           <div className="flex items-center gap-1">
             <Clock className="w-4 h-4" />
@@ -80,13 +75,11 @@ export default function CourseCard({ course, index = 0 }: CourseCardProps) {
           </div>
         </div>
 
-        {/* Instructor */}
         <div className="flex items-center gap-2 text-sm">
           <User className="w-4 h-4 text-primary" />
           <span className="text-muted-foreground">{course.instructor}</span>
         </div>
 
-        {/* CTA */}
         <Link to={`/curso/${course.id}`}>
           <Button variant="outline" className="w-full mt-2">
             Ver Detalhes
