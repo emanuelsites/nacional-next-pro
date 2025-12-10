@@ -28,6 +28,11 @@ export interface Enrollment {
   enrollment_type: string;
   nome_completo: string | null;
   cpf: string | null;
+  rg: string | null;
+  data_nascimento: string | null;
+  cargo: string | null;
+  matricula: string | null;
+  setor: string | null;
   nome_empresa: string | null;
   cnpj: string | null;
   telefone_fixo: string | null;
@@ -35,9 +40,15 @@ export interface Enrollment {
   email: string;
   cep: string | null;
   endereco: string | null;
+  numero: string | null;
+  complemento: string | null;
   bairro: string | null;
   cidade: string | null;
   uf: string | null;
+  responsavel_nome: string | null;
+  responsavel_cargo: string | null;
+  responsavel_telefone: string | null;
+  responsavel_email: string | null;
   status: string | null;
   created_at: string | null;
 }
@@ -160,4 +171,42 @@ export async function setUserAsAdmin(userId: string): Promise<void> {
     .upsert({ user_id: userId, role: 'admin' }, { onConflict: 'user_id,role' });
   
   if (error) throw error;
+}
+
+export async function sendEnrollmentEmail(data: {
+  courseName: string;
+  courseDate: string;
+  enrollmentType: string;
+  nomeCompleto: string | null;
+  cpf: string | null;
+  rg: string | null;
+  dataNascimento: string | null;
+  cargo: string | null;
+  matricula: string | null;
+  setor: string | null;
+  nomeEmpresa: string | null;
+  cnpj: string | null;
+  telefoneFixo: string | null;
+  telefoneCelular: string;
+  email: string;
+  cep: string | null;
+  endereco: string | null;
+  numero: string | null;
+  complemento: string | null;
+  bairro: string | null;
+  cidade: string | null;
+  uf: string | null;
+  responsavelNome: string | null;
+  responsavelCargo: string | null;
+  responsavelTelefone: string | null;
+  responsavelEmail: string | null;
+}): Promise<void> {
+  const { error } = await supabase.functions.invoke('send-enrollment-email', {
+    body: data,
+  });
+  
+  if (error) {
+    console.error('Error sending enrollment email:', error);
+    throw error;
+  }
 }
