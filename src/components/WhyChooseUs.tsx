@@ -45,12 +45,8 @@ export default function WhyChooseUs() {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <span className="inline-block px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
-            Por que nos escolher
-          </span>
           <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-            Por que estudar na{' '}
-            <span className="text-gradient">Nacional Treinamentos</span>?
+            Por que estudar na Nacional Treinamentos?
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Há mais de uma década formando profissionais de excelência para a Administração Pública

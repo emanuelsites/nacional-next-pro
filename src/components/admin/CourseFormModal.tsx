@@ -5,11 +5,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { createCourse, updateCourse, Course, categories } from '@/lib/api';
+import ImageUpload from './ImageUpload';
+import RichTextEditor from './RichTextEditor';
 
 interface CourseFormModalProps {
   isOpen: boolean;
@@ -153,18 +154,39 @@ export default function CourseFormModal({ isOpen, onClose, course }: CourseFormM
               </div>
 
               <div>
-                <Label htmlFor="short_description">Descrição Curta</Label>
-                <Textarea id="short_description" value={formData.short_description} onChange={(e) => setFormData({ ...formData, short_description: e.target.value })} rows={2} />
+                <Label>Imagem do Curso</Label>
+                <ImageUpload 
+                  value={formData.image_url} 
+                  onChange={(url) => setFormData({ ...formData, image_url: url })} 
+                  folder="courses"
+                />
               </div>
 
               <div>
-                <Label htmlFor="full_description">Descrição Completa</Label>
-                <Textarea id="full_description" value={formData.full_description} onChange={(e) => setFormData({ ...formData, full_description: e.target.value })} rows={4} />
+                <Label>Descrição Curta</Label>
+                <RichTextEditor 
+                  value={formData.short_description} 
+                  onChange={(value) => setFormData({ ...formData, short_description: value })} 
+                  placeholder="Digite uma descrição curta..."
+                />
               </div>
 
               <div>
-                <Label htmlFor="content">Conteúdo Programático (um item por linha)</Label>
-                <Textarea id="content" value={formData.content} onChange={(e) => setFormData({ ...formData, content: e.target.value })} rows={6} placeholder="Item 1&#10;Item 2&#10;Item 3" />
+                <Label>Descrição Completa</Label>
+                <RichTextEditor 
+                  value={formData.full_description} 
+                  onChange={(value) => setFormData({ ...formData, full_description: value })} 
+                  placeholder="Digite a descrição completa do curso..."
+                />
+              </div>
+
+              <div>
+                <Label>Conteúdo Programático</Label>
+                <RichTextEditor 
+                  value={formData.content} 
+                  onChange={(value) => setFormData({ ...formData, content: value })} 
+                  placeholder="Digite o conteúdo programático..."
+                />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -216,11 +238,6 @@ export default function CourseFormModal({ isOpen, onClose, course }: CourseFormM
                   <Label htmlFor="prerequisites">Pré-requisitos</Label>
                   <Input id="prerequisites" value={formData.prerequisites} onChange={(e) => setFormData({ ...formData, prerequisites: e.target.value })} />
                 </div>
-              </div>
-
-              <div>
-                <Label htmlFor="image_url">URL da Imagem</Label>
-                <Input id="image_url" value={formData.image_url} onChange={(e) => setFormData({ ...formData, image_url: e.target.value })} type="url" />
               </div>
 
               <div className="flex flex-wrap gap-6">
