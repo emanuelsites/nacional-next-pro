@@ -5,7 +5,7 @@ export interface Course {
   title: string;
   short_description: string | null;
   full_description: string | null;
-  content: string[] | null;
+  content: string | null;
   category: string;
   location: string | null;
   course_date: string | null;
