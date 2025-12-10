@@ -14,16 +14,209 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      banners: {
+        Row: {
+          active: boolean | null
+          created_at: string | null
+          id: string
+          image_url: string | null
+          link: string | null
+          position: number | null
+          subtitle: string | null
+          title: string
+        }
+        Insert: {
+          active?: boolean | null
+          created_at?: string | null
+          id?: string
+          image_url?: string | null
+          link?: string | null
+          position?: number | null
+          subtitle?: string | null
+          title: string
+        }
+        Update: {
+          active?: boolean | null
+          created_at?: string | null
+          id?: string
+          image_url?: string | null
+          link?: string | null
+          position?: number | null
+          subtitle?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
+      courses: {
+        Row: {
+          active: boolean | null
+          category: string
+          certificate: boolean | null
+          content: string[] | null
+          course_date: string | null
+          created_at: string | null
+          duration: string | null
+          featured: boolean | null
+          full_description: string | null
+          id: string
+          image_url: string | null
+          instructor: string | null
+          location: string | null
+          modality: string | null
+          prerequisites: string | null
+          short_description: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          active?: boolean | null
+          category?: string
+          certificate?: boolean | null
+          content?: string[] | null
+          course_date?: string | null
+          created_at?: string | null
+          duration?: string | null
+          featured?: boolean | null
+          full_description?: string | null
+          id?: string
+          image_url?: string | null
+          instructor?: string | null
+          location?: string | null
+          modality?: string | null
+          prerequisites?: string | null
+          short_description?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          active?: boolean | null
+          category?: string
+          certificate?: boolean | null
+          content?: string[] | null
+          course_date?: string | null
+          created_at?: string | null
+          duration?: string | null
+          featured?: boolean | null
+          full_description?: string | null
+          id?: string
+          image_url?: string | null
+          instructor?: string | null
+          location?: string | null
+          modality?: string | null
+          prerequisites?: string | null
+          short_description?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      enrollments: {
+        Row: {
+          bairro: string | null
+          cep: string | null
+          cidade: string | null
+          cnpj: string | null
+          course_id: string | null
+          course_name: string
+          cpf: string | null
+          created_at: string | null
+          email: string
+          endereco: string | null
+          enrollment_type: string
+          id: string
+          nome_completo: string | null
+          nome_empresa: string | null
+          status: string | null
+          telefone_celular: string
+          telefone_fixo: string | null
+          uf: string | null
+        }
+        Insert: {
+          bairro?: string | null
+          cep?: string | null
+          cidade?: string | null
+          cnpj?: string | null
+          course_id?: string | null
+          course_name: string
+          cpf?: string | null
+          created_at?: string | null
+          email: string
+          endereco?: string | null
+          enrollment_type: string
+          id?: string
+          nome_completo?: string | null
+          nome_empresa?: string | null
+          status?: string | null
+          telefone_celular: string
+          telefone_fixo?: string | null
+          uf?: string | null
+        }
+        Update: {
+          bairro?: string | null
+          cep?: string | null
+          cidade?: string | null
+          cnpj?: string | null
+          course_id?: string | null
+          course_name?: string
+          cpf?: string | null
+          created_at?: string | null
+          email?: string
+          endereco?: string | null
+          enrollment_type?: string
+          id?: string
+          nome_completo?: string | null
+          nome_empresa?: string | null
+          status?: string | null
+          telefone_celular?: string
+          telefone_fixo?: string | null
+          uf?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "enrollments_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +343,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const
