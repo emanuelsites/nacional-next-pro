@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Clock, MapPin, ArrowRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
@@ -87,43 +87,26 @@ export default function HeroCarousel() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6"
+              className="text-2xl md:text-3xl lg:text-4xl font-bold leading-tight mb-4 line-clamp-3"
             >
               {currentCourse.title}
             </motion.h1>
 
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="text-lg md:text-xl text-background/80 mb-8 max-w-2xl"
-            >
-              {currentCourse.short_description}
-            </motion.p>
-
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="flex flex-wrap gap-6 mb-8 text-background/90"
+              transition={{ delay: 0.4 }}
+              className="flex flex-wrap gap-4 mb-6 text-sm text-background/80"
             >
-              <div className="flex items-center gap-2">
-                <MapPin className="w-5 h-5 text-primary" />
-                <span>{currentCourse.location}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Clock className="w-5 h-5 text-primary" />
-                <span>{currentCourse.duration}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="font-medium">{currentCourse.course_date}</span>
-              </div>
+              <span>{currentCourse.course_date}</span>
+              <span>•</span>
+              <span>{currentCourse.duration}</span>
             </motion.div>
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
+              transition={{ delay: 0.5 }}
               className="flex flex-wrap gap-4"
             >
               <Link to={`/curso/${currentCourse.id}`}>
