@@ -2,3 +2,6 @@ project_id = "nbnxdhqldirwoirrgdrk"
 
 [functions.create-admin]
 verify_jwt = false
+
+[functions.send-enrollment-email]
+verify_jwt = false
