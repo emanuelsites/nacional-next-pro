@@ -43,9 +43,6 @@ export default function Testimonials() {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <span className="inline-block px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
-            Depoimentos
-          </span>
           <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
             O que nossos alunos dizem
           </h2>

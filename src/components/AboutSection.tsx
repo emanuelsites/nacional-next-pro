@@ -48,10 +48,6 @@ export default function AboutSection() {
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <span className="inline-block px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
-              Quem Somos
-            </span>
-            
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6 leading-tight">
               Capacitando profissionais para a{' '}
               <span className="text-gradient">Administração Pública</span>
