@@ -37,9 +37,6 @@ const Index = () => {
               viewport={{ once: true }}
               className="text-center mb-12"
             >
-              <span className="inline-block px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
-                Cursos em Destaque
-              </span>
               <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
                 Nossos cursos mais <span className="text-gradient">procurados</span>
               </h2>
