@@ -1,10 +1,9 @@
 import { useState } from 'react';
-import { X, User, Building2 } from 'lucide-react';
+import { X, User, Building2, Plus, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { createEnrollment, sendEnrollmentEmail, Course } from '@/lib/api';
 
@@ -14,114 +13,139 @@ interface EnrollmentModalProps {
   course: Course;
 }
 
-const estados = [
-  'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS',
-  'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'
-];
+interface Participante {
+  nome: string;
+  email: string;
+  telefone: string;
+  cpf: string;
+}
+
+const emptyParticipante: Participante = { nome: '', email: '', telefone: '', cpf: '' };
 
 export default function EnrollmentModal({ isOpen, onClose, course }: EnrollmentModalProps) {
   const [type, setType] = useState<'pessoa_fisica' | 'pessoa_juridica'>('pessoa_fisica');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
-  const [formData, setFormData] = useState({
+  // Pessoa Física - campos simplificados
+  const [pessoaFisica, setPessoaFisica] = useState({
     nome_completo: '',
     cpf: '',
-    rg: '',
-    data_nascimento: '',
-    cargo: '',
-    matricula: '',
-    setor: '',
-    nome_empresa: '',
-    cnpj: '',
-    telefone_fixo: '',
     telefone_celular: '',
     email: '',
-    cep: '',
+  });
+
+  // Pessoa Jurídica - campos completos
+  const [empresa, setEmpresa] = useState({
+    nome_empresa: '',
+    cnpj: '',
     endereco: '',
-    numero: '',
-    complemento: '',
     bairro: '',
     cidade: '',
     uf: '',
-    responsavel_nome: '',
-    responsavel_cargo: '',
-    responsavel_telefone: '',
-    responsavel_email: '',
+    cep: '',
+    telefone: '',
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  const [responsavelPagamento, setResponsavelPagamento] = useState({
+    nome: '',
+    cargo: '',
+    telefone: '',
+    email: '',
+  });
+
+  const [responsavelInscricao, setResponsavelInscricao] = useState({
+    nome: '',
+    cargo: '',
+    telefone: '',
+    email: '',
+  });
+
+  const [participantes, setParticipantes] = useState<Participante[]>([{ ...emptyParticipante }]);
+
+  const addParticipante = () => {
+    if (participantes.length < 5) {
+      setParticipantes([...participantes, { ...emptyParticipante }]);
+    }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const removeParticipante = (index: number) => {
+    if (participantes.length > 1) {
+      setParticipantes(participantes.filter((_, i) => i !== index));
+    }
+  };
+
+  const updateParticipante = (index: number, field: keyof Participante, value: string) => {
+    const updated = [...participantes];
+    updated[index][field] = value;
+    setParticipantes(updated);
+  };
+
+  const handleSubmitPF = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
-      // Save to database
       await createEnrollment({
         course_id: course.id,
         course_name: course.title,
-        enrollment_type: type,
-        nome_completo: formData.nome_completo || null,
-        cpf: formData.cpf || null,
-        rg: formData.rg || null,
-        data_nascimento: formData.data_nascimento || null,
-        cargo: formData.cargo || null,
-        matricula: formData.matricula || null,
-        setor: formData.setor || null,
-        nome_empresa: formData.nome_empresa || null,
-        cnpj: formData.cnpj || null,
-        telefone_fixo: formData.telefone_fixo || null,
-        telefone_celular: formData.telefone_celular,
-        email: formData.email,
-        cep: formData.cep || null,
-        endereco: formData.endereco || null,
-        numero: formData.numero || null,
-        complemento: formData.complemento || null,
-        bairro: formData.bairro || null,
-        cidade: formData.cidade || null,
-        uf: formData.uf || null,
-        responsavel_nome: formData.responsavel_nome || null,
-        responsavel_cargo: formData.responsavel_cargo || null,
-        responsavel_telefone: formData.responsavel_telefone || null,
-        responsavel_email: formData.responsavel_email || null,
+        enrollment_type: 'pessoa_fisica',
+        nome_completo: pessoaFisica.nome_completo,
+        cpf: pessoaFisica.cpf,
+        telefone_celular: pessoaFisica.telefone_celular,
+        email: pessoaFisica.email,
+        rg: null,
+        data_nascimento: null,
+        cargo: null,
+        matricula: null,
+        setor: null,
+        nome_empresa: null,
+        cnpj: null,
+        telefone_fixo: null,
+        cep: null,
+        endereco: null,
+        numero: null,
+        complemento: null,
+        bairro: null,
+        cidade: null,
+        uf: null,
+        responsavel_nome: null,
+        responsavel_cargo: null,
+        responsavel_telefone: null,
+        responsavel_email: null,
       });
 
-      // Send email notification
       try {
         await sendEnrollmentEmail({
           courseName: course.title,
           courseDate: course.course_date || 'A informar',
-          enrollmentType: type,
-          nomeCompleto: formData.nome_completo || null,
-          cpf: formData.cpf || null,
-          rg: formData.rg || null,
-          dataNascimento: formData.data_nascimento || null,
-          cargo: formData.cargo || null,
-          matricula: formData.matricula || null,
-          setor: formData.setor || null,
-          nomeEmpresa: formData.nome_empresa || null,
-          cnpj: formData.cnpj || null,
-          telefoneFixo: formData.telefone_fixo || null,
-          telefoneCelular: formData.telefone_celular,
-          email: formData.email,
-          cep: formData.cep || null,
-          endereco: formData.endereco || null,
-          numero: formData.numero || null,
-          complemento: formData.complemento || null,
-          bairro: formData.bairro || null,
-          cidade: formData.cidade || null,
-          uf: formData.uf || null,
-          responsavelNome: formData.responsavel_nome || null,
-          responsavelCargo: formData.responsavel_cargo || null,
-          responsavelTelefone: formData.responsavel_telefone || null,
-          responsavelEmail: formData.responsavel_email || null,
+          enrollmentType: 'pessoa_fisica',
+          nomeCompleto: pessoaFisica.nome_completo,
+          cpf: pessoaFisica.cpf,
+          telefoneCelular: pessoaFisica.telefone_celular,
+          email: pessoaFisica.email,
+          rg: null,
+          dataNascimento: null,
+          cargo: null,
+          matricula: null,
+          setor: null,
+          nomeEmpresa: null,
+          cnpj: null,
+          telefoneFixo: null,
+          cep: null,
+          endereco: null,
+          numero: null,
+          complemento: null,
+          bairro: null,
+          cidade: null,
+          uf: null,
+          responsavelNome: null,
+          responsavelCargo: null,
+          responsavelTelefone: null,
+          responsavelEmail: null,
         });
       } catch (emailError) {
-        console.error('Error sending email notification:', emailError);
-        // Don't fail the enrollment if email fails
+        console.error('Error sending email:', emailError);
       }
 
       toast({
@@ -130,15 +154,9 @@ export default function EnrollmentModal({ isOpen, onClose, course }: EnrollmentM
       });
 
       onClose();
-      setFormData({
-        nome_completo: '', cpf: '', rg: '', data_nascimento: '',
-        cargo: '', matricula: '', setor: '',
-        nome_empresa: '', cnpj: '',
-        telefone_fixo: '', telefone_celular: '', email: '',
-        cep: '', endereco: '', numero: '', complemento: '', bairro: '', cidade: '', uf: '',
-        responsavel_nome: '', responsavel_cargo: '', responsavel_telefone: '', responsavel_email: '',
-      });
+      resetForm();
     } catch (error) {
+      console.error('Enrollment error:', error);
       toast({
         title: "Erro ao realizar inscrição",
         description: "Por favor, tente novamente.",
@@ -147,6 +165,113 @@ export default function EnrollmentModal({ isOpen, onClose, course }: EnrollmentM
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleSubmitPJ = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      // Criar uma inscrição para cada participante
+      for (const participante of participantes) {
+        if (!participante.nome || !participante.email || !participante.telefone || !participante.cpf) {
+          continue;
+        }
+
+        await createEnrollment({
+          course_id: course.id,
+          course_name: course.title,
+          enrollment_type: 'pessoa_juridica',
+          nome_completo: participante.nome,
+          cpf: participante.cpf,
+          telefone_celular: participante.telefone,
+          email: participante.email,
+          rg: null,
+          data_nascimento: null,
+          cargo: null,
+          matricula: null,
+          setor: null,
+          nome_empresa: empresa.nome_empresa,
+          cnpj: empresa.cnpj,
+          telefone_fixo: empresa.telefone,
+          cep: empresa.cep,
+          endereco: empresa.endereco,
+          numero: null,
+          complemento: null,
+          bairro: empresa.bairro,
+          cidade: empresa.cidade,
+          uf: empresa.uf,
+          responsavel_nome: responsavelInscricao.nome,
+          responsavel_cargo: responsavelInscricao.cargo,
+          responsavel_telefone: responsavelInscricao.telefone,
+          responsavel_email: responsavelInscricao.email,
+        });
+      }
+
+      // Enviar email com todos os participantes
+      try {
+        const participantesInfo = participantes
+          .filter(p => p.nome && p.email)
+          .map(p => `${p.nome} (${p.email}, ${p.telefone}, CPF: ${p.cpf})`)
+          .join(' | ');
+
+        await sendEnrollmentEmail({
+          courseName: course.title,
+          courseDate: course.course_date || 'A informar',
+          enrollmentType: 'pessoa_juridica',
+          nomeCompleto: participantesInfo,
+          cpf: null,
+          telefoneCelular: empresa.telefone || responsavelInscricao.telefone,
+          email: responsavelInscricao.email || participantes[0]?.email || '',
+          rg: null,
+          dataNascimento: null,
+          cargo: null,
+          matricula: null,
+          setor: null,
+          nomeEmpresa: empresa.nome_empresa,
+          cnpj: empresa.cnpj,
+          telefoneFixo: empresa.telefone,
+          cep: empresa.cep,
+          endereco: empresa.endereco,
+          numero: null,
+          complemento: null,
+          bairro: empresa.bairro,
+          cidade: empresa.cidade,
+          uf: empresa.uf,
+          responsavelNome: `Inscrição: ${responsavelInscricao.nome} | Pagamento: ${responsavelPagamento.nome}`,
+          responsavelCargo: `Inscrição: ${responsavelInscricao.cargo} | Pagamento: ${responsavelPagamento.cargo}`,
+          responsavelTelefone: `Inscrição: ${responsavelInscricao.telefone} | Pagamento: ${responsavelPagamento.telefone}`,
+          responsavelEmail: `Inscrição: ${responsavelInscricao.email} | Pagamento: ${responsavelPagamento.email}`,
+        });
+      } catch (emailError) {
+        console.error('Error sending email:', emailError);
+      }
+
+      toast({
+        title: "Inscrições realizadas com sucesso!",
+        description: `${participantes.filter(p => p.nome).length} participante(s) inscrito(s).`,
+      });
+
+      onClose();
+      resetForm();
+    } catch (error) {
+      console.error('Enrollment error:', error);
+      toast({
+        title: "Erro ao realizar inscrição",
+        description: "Por favor, tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const resetForm = () => {
+    setPessoaFisica({ nome_completo: '', cpf: '', telefone_celular: '', email: '' });
+    setEmpresa({ nome_empresa: '', cnpj: '', endereco: '', bairro: '', cidade: '', uf: '', cep: '', telefone: '' });
+    setResponsavelPagamento({ nome: '', cargo: '', telefone: '', email: '' });
+    setResponsavelInscricao({ nome: '', cargo: '', telefone: '', email: '' });
+    setParticipantes([{ ...emptyParticipante }]);
   };
 
   return (
@@ -163,7 +288,7 @@ export default function EnrollmentModal({ isOpen, onClose, course }: EnrollmentM
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="bg-background rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden"
+            className="bg-background rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden"
           >
             <div className="gradient-primary p-6">
               <div className="flex items-center justify-between">
@@ -177,168 +302,354 @@ export default function EnrollmentModal({ isOpen, onClose, course }: EnrollmentM
               </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-6 overflow-y-auto max-h-[calc(90vh-180px)]">
+            <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
               {/* Type Selection */}
               <div className="flex gap-4 mb-6">
-                <button type="button" onClick={() => setType('pessoa_fisica')} className={`flex-1 flex items-center justify-center gap-3 p-4 rounded-xl border-2 transition-all ${type === 'pessoa_fisica' ? 'border-primary bg-primary/10 text-primary' : 'border-border hover:border-primary/50'}`}>
-                  <User className="w-5 h-5" /><span className="font-medium">Pessoa Física</span>
+                <button
+                  type="button"
+                  onClick={() => setType('pessoa_fisica')}
+                  className={`flex-1 flex items-center justify-center gap-3 p-4 rounded-xl border-2 transition-all ${
+                    type === 'pessoa_fisica'
+                      ? 'border-primary bg-primary/10 text-primary'
+                      : 'border-border hover:border-primary/50'
+                  }`}
+                >
+                  <User className="w-5 h-5" />
+                  <span className="font-medium">Pessoa Física</span>
                 </button>
-                <button type="button" onClick={() => setType('pessoa_juridica')} className={`flex-1 flex items-center justify-center gap-3 p-4 rounded-xl border-2 transition-all ${type === 'pessoa_juridica' ? 'border-primary bg-primary/10 text-primary' : 'border-border hover:border-primary/50'}`}>
-                  <Building2 className="w-5 h-5" /><span className="font-medium">Pessoa Jurídica</span>
+                <button
+                  type="button"
+                  onClick={() => setType('pessoa_juridica')}
+                  className={`flex-1 flex items-center justify-center gap-3 p-4 rounded-xl border-2 transition-all ${
+                    type === 'pessoa_juridica'
+                      ? 'border-primary bg-primary/10 text-primary'
+                      : 'border-border hover:border-primary/50'
+                  }`}
+                >
+                  <Building2 className="w-5 h-5" />
+                  <span className="font-medium">Pessoa Jurídica</span>
                 </button>
               </div>
 
-              <div className="space-y-6">
-                {type === 'pessoa_fisica' ? (
-                  <>
-                    {/* Dados Pessoais - Pessoa Física */}
-                    <div className="space-y-4">
-                      <h3 className="font-semibold text-foreground border-b border-border pb-2">Dados do Participante</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="md:col-span-2">
-                          <Label htmlFor="nome_completo">Nome Completo *</Label>
-                          <Input id="nome_completo" name="nome_completo" value={formData.nome_completo} onChange={handleChange} required />
-                        </div>
-                        <div>
-                          <Label htmlFor="cpf">CPF *</Label>
-                          <Input id="cpf" name="cpf" value={formData.cpf} onChange={handleChange} placeholder="000.000.000-00" required />
-                        </div>
-                        <div>
-                          <Label htmlFor="rg">RG</Label>
-                          <Input id="rg" name="rg" value={formData.rg} onChange={handleChange} />
-                        </div>
-                        <div>
-                          <Label htmlFor="data_nascimento">Data de Nascimento</Label>
-                          <Input id="data_nascimento" name="data_nascimento" type="date" value={formData.data_nascimento} onChange={handleChange} />
-                        </div>
-                        <div>
-                          <Label htmlFor="cargo">Cargo/Função</Label>
-                          <Input id="cargo" name="cargo" value={formData.cargo} onChange={handleChange} />
-                        </div>
-                        <div>
-                          <Label htmlFor="matricula">Matrícula</Label>
-                          <Input id="matricula" name="matricula" value={formData.matricula} onChange={handleChange} />
-                        </div>
-                        <div>
-                          <Label htmlFor="setor">Setor/Departamento</Label>
-                          <Input id="setor" name="setor" value={formData.setor} onChange={handleChange} />
-                        </div>
+              {type === 'pessoa_fisica' ? (
+                <form onSubmit={handleSubmitPF} className="space-y-6">
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-foreground border-b border-border pb-2">
+                      Dados do Participante
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="md:col-span-2">
+                        <Label htmlFor="pf_nome">Nome Completo *</Label>
+                        <Input
+                          id="pf_nome"
+                          value={pessoaFisica.nome_completo}
+                          onChange={(e) => setPessoaFisica({ ...pessoaFisica, nome_completo: e.target.value })}
+                          required
+                        />
                       </div>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    {/* Dados da Empresa - Pessoa Jurídica */}
-                    <div className="space-y-4">
-                      <h3 className="font-semibold text-foreground border-b border-border pb-2">Dados da Empresa/Órgão</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="md:col-span-2">
-                          <Label htmlFor="nome_empresa">Nome da Empresa/Órgão *</Label>
-                          <Input id="nome_empresa" name="nome_empresa" value={formData.nome_empresa} onChange={handleChange} required />
-                        </div>
-                        <div>
-                          <Label htmlFor="cnpj">CNPJ *</Label>
-                          <Input id="cnpj" name="cnpj" value={formData.cnpj} onChange={handleChange} placeholder="00.000.000/0000-00" required />
-                        </div>
+                      <div>
+                        <Label htmlFor="pf_cpf">CPF *</Label>
+                        <Input
+                          id="pf_cpf"
+                          value={pessoaFisica.cpf}
+                          onChange={(e) => setPessoaFisica({ ...pessoaFisica, cpf: e.target.value })}
+                          placeholder="000.000.000-00"
+                          required
+                        />
                       </div>
-                    </div>
-
-                    {/* Responsável pela Inscrição */}
-                    <div className="space-y-4">
-                      <h3 className="font-semibold text-foreground border-b border-border pb-2">Responsável pela Inscrição</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <Label htmlFor="responsavel_nome">Nome do Responsável</Label>
-                          <Input id="responsavel_nome" name="responsavel_nome" value={formData.responsavel_nome} onChange={handleChange} />
-                        </div>
-                        <div>
-                          <Label htmlFor="responsavel_cargo">Cargo</Label>
-                          <Input id="responsavel_cargo" name="responsavel_cargo" value={formData.responsavel_cargo} onChange={handleChange} />
-                        </div>
-                        <div>
-                          <Label htmlFor="responsavel_telefone">Telefone</Label>
-                          <Input id="responsavel_telefone" name="responsavel_telefone" value={formData.responsavel_telefone} onChange={handleChange} />
-                        </div>
-                        <div>
-                          <Label htmlFor="responsavel_email">E-mail</Label>
-                          <Input id="responsavel_email" name="responsavel_email" type="email" value={formData.responsavel_email} onChange={handleChange} />
-                        </div>
+                      <div>
+                        <Label htmlFor="pf_telefone">Telefone/WhatsApp *</Label>
+                        <Input
+                          id="pf_telefone"
+                          value={pessoaFisica.telefone_celular}
+                          onChange={(e) => setPessoaFisica({ ...pessoaFisica, telefone_celular: e.target.value })}
+                          placeholder="(00) 00000-0000"
+                          required
+                        />
                       </div>
-                    </div>
-                  </>
-                )}
-
-                {/* Contato */}
-                <div className="space-y-4">
-                  <h3 className="font-semibold text-foreground border-b border-border pb-2">Contato</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="telefone_fixo">Telefone Fixo</Label>
-                      <Input id="telefone_fixo" name="telefone_fixo" value={formData.telefone_fixo} onChange={handleChange} placeholder="(00) 0000-0000" />
-                    </div>
-                    <div>
-                      <Label htmlFor="telefone_celular">Celular/WhatsApp *</Label>
-                      <Input id="telefone_celular" name="telefone_celular" value={formData.telefone_celular} onChange={handleChange} placeholder="(00) 00000-0000" required />
-                    </div>
-                    <div className="md:col-span-2">
-                      <Label htmlFor="email">E-mail *</Label>
-                      <Input id="email" name="email" type="email" value={formData.email} onChange={handleChange} required />
+                      <div className="md:col-span-2">
+                        <Label htmlFor="pf_email">E-mail *</Label>
+                        <Input
+                          id="pf_email"
+                          type="email"
+                          value={pessoaFisica.email}
+                          onChange={(e) => setPessoaFisica({ ...pessoaFisica, email: e.target.value })}
+                          required
+                        />
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Endereço */}
-                <div className="space-y-4">
-                  <h3 className="font-semibold text-foreground border-b border-border pb-2">Endereço</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div>
-                      <Label htmlFor="cep">CEP</Label>
-                      <Input id="cep" name="cep" value={formData.cep} onChange={handleChange} placeholder="00000-000" />
-                    </div>
-                    <div className="md:col-span-2">
-                      <Label htmlFor="endereco">Logradouro</Label>
-                      <Input id="endereco" name="endereco" value={formData.endereco} onChange={handleChange} />
-                    </div>
-                    <div>
-                      <Label htmlFor="numero">Número</Label>
-                      <Input id="numero" name="numero" value={formData.numero} onChange={handleChange} />
-                    </div>
-                    <div className="md:col-span-2">
-                      <Label htmlFor="complemento">Complemento</Label>
-                      <Input id="complemento" name="complemento" value={formData.complemento} onChange={handleChange} />
-                    </div>
-                    <div>
-                      <Label htmlFor="bairro">Bairro</Label>
-                      <Input id="bairro" name="bairro" value={formData.bairro} onChange={handleChange} />
-                    </div>
-                    <div>
-                      <Label htmlFor="cidade">Cidade</Label>
-                      <Input id="cidade" name="cidade" value={formData.cidade} onChange={handleChange} />
-                    </div>
-                    <div className="md:col-span-2">
-                      <Label htmlFor="uf">UF</Label>
-                      <Select onValueChange={(value) => setFormData(prev => ({ ...prev, uf: value }))}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {estados.map(estado => (
-                            <SelectItem key={estado} value={estado}>{estado}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                  <div className="flex gap-4 pt-4">
+                    <Button type="button" variant="outline" onClick={onClose} className="flex-1">
+                      Cancelar
+                    </Button>
+                    <Button type="submit" variant="hero" className="flex-1" disabled={isSubmitting}>
+                      {isSubmitting ? 'Enviando...' : 'Enviar Inscrição'}
+                    </Button>
+                  </div>
+                </form>
+              ) : (
+                <form onSubmit={handleSubmitPJ} className="space-y-6">
+                  {/* Dados da Empresa */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-foreground border-b border-border pb-2">
+                      Dados da Empresa/Órgão
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="md:col-span-2">
+                        <Label htmlFor="empresa_nome">Nome da Empresa/Órgão *</Label>
+                        <Input
+                          id="empresa_nome"
+                          value={empresa.nome_empresa}
+                          onChange={(e) => setEmpresa({ ...empresa, nome_empresa: e.target.value })}
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="empresa_cnpj">CNPJ *</Label>
+                        <Input
+                          id="empresa_cnpj"
+                          value={empresa.cnpj}
+                          onChange={(e) => setEmpresa({ ...empresa, cnpj: e.target.value })}
+                          placeholder="00.000.000/0000-00"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="empresa_telefone">Telefone</Label>
+                        <Input
+                          id="empresa_telefone"
+                          value={empresa.telefone}
+                          onChange={(e) => setEmpresa({ ...empresa, telefone: e.target.value })}
+                          placeholder="(00) 0000-0000"
+                        />
+                      </div>
+                      <div className="md:col-span-2">
+                        <Label htmlFor="empresa_endereco">Endereço</Label>
+                        <Input
+                          id="empresa_endereco"
+                          value={empresa.endereco}
+                          onChange={(e) => setEmpresa({ ...empresa, endereco: e.target.value })}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="empresa_bairro">Bairro</Label>
+                        <Input
+                          id="empresa_bairro"
+                          value={empresa.bairro}
+                          onChange={(e) => setEmpresa({ ...empresa, bairro: e.target.value })}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="empresa_cidade">Cidade</Label>
+                        <Input
+                          id="empresa_cidade"
+                          value={empresa.cidade}
+                          onChange={(e) => setEmpresa({ ...empresa, cidade: e.target.value })}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="empresa_uf">UF</Label>
+                        <Input
+                          id="empresa_uf"
+                          value={empresa.uf}
+                          onChange={(e) => setEmpresa({ ...empresa, uf: e.target.value })}
+                          maxLength={2}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="empresa_cep">CEP</Label>
+                        <Input
+                          id="empresa_cep"
+                          value={empresa.cep}
+                          onChange={(e) => setEmpresa({ ...empresa, cep: e.target.value })}
+                          placeholder="00000-000"
+                        />
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
 
-              <div className="mt-8 flex gap-4">
-                <Button type="button" variant="outline" onClick={onClose} className="flex-1">Cancelar</Button>
-                <Button type="submit" variant="hero" className="flex-1" disabled={isSubmitting}>
-                  {isSubmitting ? 'Enviando...' : 'Enviar Inscrição'}
-                </Button>
-              </div>
-            </form>
+                  {/* Responsável pelo Pagamento */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-foreground border-b border-border pb-2">
+                      Responsável pelo Pagamento
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="pag_nome">Nome *</Label>
+                        <Input
+                          id="pag_nome"
+                          value={responsavelPagamento.nome}
+                          onChange={(e) => setResponsavelPagamento({ ...responsavelPagamento, nome: e.target.value })}
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="pag_cargo">Cargo</Label>
+                        <Input
+                          id="pag_cargo"
+                          value={responsavelPagamento.cargo}
+                          onChange={(e) => setResponsavelPagamento({ ...responsavelPagamento, cargo: e.target.value })}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="pag_telefone">Telefone *</Label>
+                        <Input
+                          id="pag_telefone"
+                          value={responsavelPagamento.telefone}
+                          onChange={(e) => setResponsavelPagamento({ ...responsavelPagamento, telefone: e.target.value })}
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="pag_email">E-mail *</Label>
+                        <Input
+                          id="pag_email"
+                          type="email"
+                          value={responsavelPagamento.email}
+                          onChange={(e) => setResponsavelPagamento({ ...responsavelPagamento, email: e.target.value })}
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Responsável pela Inscrição */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-foreground border-b border-border pb-2">
+                      Responsável pela Inscrição
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="insc_nome">Nome *</Label>
+                        <Input
+                          id="insc_nome"
+                          value={responsavelInscricao.nome}
+                          onChange={(e) => setResponsavelInscricao({ ...responsavelInscricao, nome: e.target.value })}
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="insc_cargo">Cargo</Label>
+                        <Input
+                          id="insc_cargo"
+                          value={responsavelInscricao.cargo}
+                          onChange={(e) => setResponsavelInscricao({ ...responsavelInscricao, cargo: e.target.value })}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="insc_telefone">Telefone *</Label>
+                        <Input
+                          id="insc_telefone"
+                          value={responsavelInscricao.telefone}
+                          onChange={(e) => setResponsavelInscricao({ ...responsavelInscricao, telefone: e.target.value })}
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="insc_email">E-mail *</Label>
+                        <Input
+                          id="insc_email"
+                          type="email"
+                          value={responsavelInscricao.email}
+                          onChange={(e) => setResponsavelInscricao({ ...responsavelInscricao, email: e.target.value })}
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Participantes */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between border-b border-border pb-2">
+                      <h3 className="font-semibold text-foreground">
+                        Participantes ({participantes.length}/5)
+                      </h3>
+                      {participantes.length < 5 && (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={addParticipante}
+                          className="gap-1"
+                        >
+                          <Plus className="w-4 h-4" />
+                          Adicionar
+                        </Button>
+                      )}
+                    </div>
+                    
+                    {participantes.map((participante, index) => (
+                      <div key={index} className="p-4 bg-muted/30 rounded-lg space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="font-medium text-sm text-muted-foreground">
+                            Participante {index + 1}
+                          </span>
+                          {participantes.length > 1 && (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => removeParticipante(index)}
+                              className="text-destructive hover:text-destructive"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          )}
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          <div>
+                            <Label>Nome Completo *</Label>
+                            <Input
+                              value={participante.nome}
+                              onChange={(e) => updateParticipante(index, 'nome', e.target.value)}
+                              required
+                            />
+                          </div>
+                          <div>
+                            <Label>CPF *</Label>
+                            <Input
+                              value={participante.cpf}
+                              onChange={(e) => updateParticipante(index, 'cpf', e.target.value)}
+                              placeholder="000.000.000-00"
+                              required
+                            />
+                          </div>
+                          <div>
+                            <Label>Telefone *</Label>
+                            <Input
+                              value={participante.telefone}
+                              onChange={(e) => updateParticipante(index, 'telefone', e.target.value)}
+                              placeholder="(00) 00000-0000"
+                              required
+                            />
+                          </div>
+                          <div>
+                            <Label>E-mail *</Label>
+                            <Input
+                              type="email"
+                              value={participante.email}
+                              onChange={(e) => updateParticipante(index, 'email', e.target.value)}
+                              required
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="flex gap-4 pt-4">
+                    <Button type="button" variant="outline" onClick={onClose} className="flex-1">
+                      Cancelar
+                    </Button>
+                    <Button type="submit" variant="hero" className="flex-1" disabled={isSubmitting}>
+                      {isSubmitting ? 'Enviando...' : 'Enviar Inscrição'}
+                    </Button>
+                  </div>
+                </form>
+              )}
+            </div>
           </motion.div>
         </motion.div>
       )}
