@@ -49,8 +49,7 @@ export default function AboutSection() {
             viewport={{ once: true }}
           >
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6 leading-tight">
-              Capacitando profissionais para a{' '}
-              <span className="text-gradient">Administração Pública</span>
+              Capacitando profissionais para a Administração Pública
             </h2>
 
             <p className="text-muted-foreground text-lg leading-relaxed mb-6">
