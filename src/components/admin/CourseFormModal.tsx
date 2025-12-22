@@ -42,7 +42,7 @@ export default function CourseFormModal({ isOpen, onClose, course }: CourseFormM
   });
 
   useEffect(() => {
-    if (course) {
+    if (isOpen && course) {
       setFormData({
         title: course.title || '',
         short_description: course.short_description || '',
@@ -60,7 +60,7 @@ export default function CourseFormModal({ isOpen, onClose, course }: CourseFormM
         featured: course.featured ?? false,
         active: course.active ?? true,
       });
-    } else {
+    } else if (isOpen && !course) {
       setFormData({
         title: '',
         short_description: '',
@@ -79,7 +79,7 @@ export default function CourseFormModal({ isOpen, onClose, course }: CourseFormM
         active: true,
       });
     }
-  }, [course]);
+  }, [isOpen, course]);
 
   const createMutation = useMutation({
     mutationFn: createCourse,
