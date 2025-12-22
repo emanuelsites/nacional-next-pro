@@ -162,6 +162,48 @@
   .btn-glow:hover::before {
     @apply opacity-100;
   }
+
+  /* Course content formatting */
+  .course-content {
+    line-height: 1.8;
+  }
+
+  .course-content strong {
+    display: block;
+    color: hsl(var(--foreground));
+    font-weight: 700;
+    font-size: 1.05em;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.25rem;
+    border-bottom: 2px solid hsl(var(--primary) / 0.2);
+  }
+
+  .course-content strong:first-child {
+    margin-top: 0;
+  }
+
+  .course-content p {
+    margin-bottom: 1rem;
+    line-height: 1.75;
+  }
+
+  .course-content ul,
+  .course-content ol {
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+  }
+
+  .course-content li {
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
+  }
+
+  .course-content br {
+    display: block;
+    content: "";
+    margin-top: 0.5rem;
+  }
 }
 
 @layer utilities {

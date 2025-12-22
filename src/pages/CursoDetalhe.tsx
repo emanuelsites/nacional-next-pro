@@ -133,11 +133,14 @@ export default function CursoDetalhe() {
                   <Card>
                     <CardContent className="p-6">
                       <div 
-                        className="prose prose-gray max-w-none text-muted-foreground leading-relaxed
-                          prose-headings:text-foreground prose-headings:font-semibold
-                          prose-p:mb-4 prose-ul:my-4 prose-ol:my-4
-                          prose-li:text-muted-foreground
-                          prose-strong:text-foreground"
+                        className="course-content prose prose-gray max-w-none text-muted-foreground leading-loose
+                          prose-headings:text-foreground prose-headings:font-bold prose-headings:mt-6 prose-headings:mb-3
+                          prose-p:mb-4 prose-p:leading-relaxed
+                          prose-ul:my-4 prose-ul:space-y-2 prose-ol:my-4 prose-ol:space-y-2
+                          prose-li:text-muted-foreground prose-li:leading-relaxed
+                          prose-strong:text-foreground prose-strong:font-bold
+                          [&_strong]:block [&_strong]:text-foreground [&_strong]:font-bold [&_strong]:mt-5 [&_strong]:mb-2
+                          [&_br]:block [&_br]:mt-2"
                         dangerouslySetInnerHTML={{ __html: course.full_description }}
                       />
                     </CardContent>
@@ -157,11 +160,14 @@ export default function CursoDetalhe() {
                   <Card>
                     <CardContent className="p-6">
                       <div 
-                        className="prose prose-gray max-w-none text-muted-foreground leading-relaxed
-                          prose-headings:text-foreground prose-headings:font-semibold
-                          prose-p:mb-4 prose-ul:my-4 prose-ol:my-4
-                          prose-li:text-muted-foreground
-                          prose-strong:text-foreground"
+                        className="course-content prose prose-gray max-w-none text-muted-foreground leading-loose
+                          prose-headings:text-foreground prose-headings:font-bold prose-headings:mt-6 prose-headings:mb-3
+                          prose-p:mb-4 prose-p:leading-relaxed
+                          prose-ul:my-4 prose-ul:space-y-2 prose-ol:my-4 prose-ol:space-y-2
+                          prose-li:text-muted-foreground prose-li:leading-relaxed
+                          prose-strong:text-foreground prose-strong:font-bold
+                          [&_strong]:block [&_strong]:text-foreground [&_strong]:font-bold [&_strong]:mt-5 [&_strong]:mb-2
+                          [&_br]:block [&_br]:mt-2"
                         dangerouslySetInnerHTML={{ __html: course.content }}
                       />
                     </CardContent>
