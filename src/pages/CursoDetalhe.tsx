@@ -68,21 +68,29 @@ export default function CursoDetalhe() {
           <div className="absolute inset-0 bg-gradient-to-t from-foreground via-foreground/70 to-foreground/30" />
           
           {/* Print and Share buttons */}
-          <div className="absolute top-4 right-4 flex gap-2 print:hidden">
+          <div className="absolute top-4 right-4 flex gap-2 print:hidden z-50">
             <Button 
-              variant="secondary" 
+              variant="default" 
               size="sm" 
-              onClick={handlePrint}
-              className="bg-background/90 hover:bg-background"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handlePrint();
+              }}
+              className="bg-foreground text-background hover:bg-foreground/90"
             >
               <Printer className="w-4 h-4 mr-2" />
               Imprimir
             </Button>
             <Button 
-              variant="secondary" 
+              variant="default" 
               size="sm" 
-              onClick={handleShareWhatsApp}
-              className="bg-background/90 hover:bg-background"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleShareWhatsApp();
+              }}
+              className="bg-foreground text-background hover:bg-foreground/90"
             >
               <Share2 className="w-4 h-4 mr-2" />
               Compartilhar
