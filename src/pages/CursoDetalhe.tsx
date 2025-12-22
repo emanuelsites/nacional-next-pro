@@ -8,7 +8,7 @@ import EnrollmentModal from '@/components/EnrollmentModal';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { Clock, MapPin, User, Award, ArrowLeft, Calendar, BookOpen, Target } from 'lucide-react';
+import { Clock, MapPin, User, Award, ArrowLeft, Calendar, BookOpen, Target, Printer, Share2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { fetchCourseById, Course } from '@/lib/api';
 
@@ -20,6 +20,18 @@ export default function CursoDetalhe() {
     enabled: !!id,
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const handleShareWhatsApp = () => {
+    if (!course) return;
+    const url = window.location.href;
+    const text = `Confira este curso: *${course.title}*\n\n📅 Data: ${course.course_date || 'A informar'}\n⏱️ Carga Horária: ${course.duration || 'A informar'}\n📍 Local: ${course.location || 'Online'}\n\n${url}`;
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
+    window.open(whatsappUrl, '_blank');
+  };
 
   if (isLoading) {
     return (
@@ -54,9 +66,32 @@ export default function CursoDetalhe() {
             className="w-full h-full object-cover" 
           />
           <div className="absolute inset-0 bg-gradient-to-t from-foreground via-foreground/70 to-foreground/30" />
+          
+          {/* Print and Share buttons */}
+          <div className="absolute top-4 right-4 flex gap-2 print:hidden">
+            <Button 
+              variant="secondary" 
+              size="sm" 
+              onClick={handlePrint}
+              className="bg-background/90 hover:bg-background"
+            >
+              <Printer className="w-4 h-4 mr-2" />
+              Imprimir
+            </Button>
+            <Button 
+              variant="secondary" 
+              size="sm" 
+              onClick={handleShareWhatsApp}
+              className="bg-background/90 hover:bg-background"
+            >
+              <Share2 className="w-4 h-4 mr-2" />
+              Compartilhar
+            </Button>
+          </div>
+
           <div className="absolute inset-0 flex items-end">
             <div className="container mx-auto px-4 pb-10">
-              <Link to="/cursos" className="inline-flex items-center gap-2 text-background/80 hover:text-background mb-4 transition-colors">
+              <Link to="/cursos" className="inline-flex items-center gap-2 text-background/80 hover:text-background mb-4 transition-colors print:hidden">
                 <ArrowLeft className="w-4 h-4" />
                 Voltar aos cursos
               </Link>

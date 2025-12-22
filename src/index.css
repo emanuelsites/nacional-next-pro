@@ -204,6 +204,31 @@
     content: "";
     margin-top: 0.5rem;
   }
+
+  .course-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.5rem;
+    margin: 1rem 0;
+  }
+}
+
+/* Print styles */
+@media print {
+  body {
+    background: white !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  header, footer, .print\\:hidden {
+    display: none !important;
+  }
+  
+  .container {
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
 }
 
 @layer utilities {
