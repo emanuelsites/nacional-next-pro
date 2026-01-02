@@ -22,7 +22,7 @@ const Index = () => {
   const featuredCourses = courses.filter(c => c.featured);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pt-[var(--admin-bar-height,0px)]">
       <Header />
       <main>
         <HeroCarousel />
