@@ -163,29 +163,54 @@
     @apply opacity-100;
   }
 
-  /* Course content formatting */
+  /* Course content formatting - preserves editor inline styles */
   .course-content {
     line-height: 1.8;
   }
 
-  .course-content strong {
-    display: block;
-    color: hsl(var(--foreground));
+  .course-content h1 {
+    font-size: 2em;
     font-weight: 700;
-    font-size: 1.05em;
     margin-top: 1.5rem;
-    margin-bottom: 0.5rem;
-    padding-bottom: 0.25rem;
-    border-bottom: 2px solid hsl(var(--primary) / 0.2);
+    margin-bottom: 0.75rem;
+    color: hsl(var(--foreground));
   }
 
-  .course-content strong:first-child {
-    margin-top: 0;
+  .course-content h2 {
+    font-size: 1.5em;
+    font-weight: 700;
+    margin-top: 1.25rem;
+    margin-bottom: 0.5rem;
+    color: hsl(var(--foreground));
+  }
+
+  .course-content h3 {
+    font-size: 1.25em;
+    font-weight: 600;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    color: hsl(var(--foreground));
   }
 
   .course-content p {
     margin-bottom: 1rem;
     line-height: 1.75;
+  }
+
+  .course-content strong {
+    font-weight: 700;
+  }
+
+  .course-content em {
+    font-style: italic;
+  }
+
+  .course-content u {
+    text-decoration: underline;
+  }
+
+  .course-content s {
+    text-decoration: line-through;
   }
 
   .course-content ul,
@@ -194,15 +219,26 @@
     padding-left: 1.5rem;
   }
 
+  .course-content ul {
+    list-style-type: disc;
+  }
+
+  .course-content ol {
+    list-style-type: decimal;
+  }
+
   .course-content li {
     margin-bottom: 0.5rem;
     line-height: 1.6;
   }
 
-  .course-content br {
-    display: block;
-    content: "";
-    margin-top: 0.5rem;
+  .course-content a {
+    color: hsl(var(--primary));
+    text-decoration: underline;
+  }
+
+  .course-content a:hover {
+    opacity: 0.8;
   }
 
   .course-content img {
@@ -211,6 +247,45 @@
     border-radius: 0.5rem;
     margin: 1rem 0;
   }
+
+  .course-content .ql-indent-1 {
+    padding-left: 3em;
+  }
+
+  .course-content .ql-indent-2 {
+    padding-left: 6em;
+  }
+
+  .course-content .ql-indent-3 {
+    padding-left: 9em;
+  }
+
+  .course-content .ql-align-center {
+    text-align: center;
+  }
+
+  .course-content .ql-align-right {
+    text-align: right;
+  }
+
+  .course-content .ql-align-justify {
+    text-align: justify;
+  }
+
+  /* Quill size classes - match the sizes defined in the editor */
+  .course-content .ql-size-8px { font-size: 8px; }
+  .course-content .ql-size-10px { font-size: 10px; }
+  .course-content .ql-size-12px { font-size: 12px; }
+  .course-content .ql-size-14px { font-size: 14px; }
+  .course-content .ql-size-16px { font-size: 16px; }
+  .course-content .ql-size-18px { font-size: 18px; }
+  .course-content .ql-size-20px { font-size: 20px; }
+  .course-content .ql-size-24px { font-size: 24px; }
+  .course-content .ql-size-28px { font-size: 28px; }
+  .course-content .ql-size-32px { font-size: 32px; }
+  .course-content .ql-size-36px { font-size: 36px; }
+  .course-content .ql-size-48px { font-size: 48px; }
+  .course-content .ql-size-72px { font-size: 72px; }
 }
 
 /* Print styles */
