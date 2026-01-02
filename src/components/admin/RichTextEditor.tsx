@@ -11,10 +11,22 @@ interface RichTextEditorProps {
 // Font sizes in pixels
 const fontSizes = ['8px', '10px', '12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px', '36px', '48px', '72px'];
 
-// Register custom font sizes
+// Register custom font sizes as inline styles
 const Size = ReactQuill.Quill.import('attributors/style/size');
 Size.whitelist = fontSizes;
 ReactQuill.Quill.register(Size, true);
+
+// Register color as inline style
+const ColorStyle = ReactQuill.Quill.import('attributors/style/color');
+ReactQuill.Quill.register(ColorStyle, true);
+
+// Register background color as inline style
+const BackgroundStyle = ReactQuill.Quill.import('attributors/style/background');
+ReactQuill.Quill.register(BackgroundStyle, true);
+
+// Register alignment as inline style
+const AlignStyle = ReactQuill.Quill.import('attributors/style/align');
+ReactQuill.Quill.register(AlignStyle, true);
 
 const formats = [
   'header',
