@@ -1,36 +1,43 @@
 import { motion } from 'framer-motion';
 import { Award, Users, Clock, BookOpen, Target, CheckCircle } from 'lucide-react';
+import EditableText from '@/components/visual-editor/EditableText';
 
 const features = [
   {
+    key: 'certification',
     icon: Award,
-    title: 'Certificação Reconhecida',
-    description: 'Certificados válidos em todo o território nacional, emitidos por profissionais qualificados.',
+    defaultTitle: 'Certificação Reconhecida',
+    defaultDescription: 'Certificados válidos em todo o território nacional, emitidos por profissionais qualificados.',
   },
   {
+    key: 'instructors',
     icon: Users,
-    title: 'Instrutores Especialistas',
-    description: 'Equipe de profissionais com ampla experiência em administração pública e privada.',
+    defaultTitle: 'Instrutores Especialistas',
+    defaultDescription: 'Equipe de profissionais com ampla experiência em administração pública e privada.',
   },
   {
+    key: 'flexibility',
     icon: Clock,
-    title: 'Flexibilidade',
-    description: 'Cursos presenciais e online, adaptados à sua disponibilidade e necessidades.',
+    defaultTitle: 'Flexibilidade',
+    defaultDescription: 'Cursos presenciais e online, adaptados à sua disponibilidade e necessidades.',
   },
   {
+    key: 'material',
     icon: BookOpen,
-    title: 'Material Didático',
-    description: 'Conteúdo atualizado e material de apoio completo para consulta posterior.',
+    defaultTitle: 'Material Didático',
+    defaultDescription: 'Conteúdo atualizado e material de apoio completo para consulta posterior.',
   },
   {
+    key: 'results',
     icon: Target,
-    title: 'Foco em Resultados',
-    description: 'Metodologia prática voltada para aplicação imediata no dia a dia profissional.',
+    defaultTitle: 'Foco em Resultados',
+    defaultDescription: 'Metodologia prática voltada para aplicação imediata no dia a dia profissional.',
   },
   {
+    key: 'quality',
     icon: CheckCircle,
-    title: 'Qualidade Comprovada',
-    description: 'Milhares de profissionais já capacitados com alto índice de satisfação.',
+    defaultTitle: 'Qualidade Comprovada',
+    defaultDescription: 'Milhares de profissionais já capacitados com alto índice de satisfação.',
   },
 ];
 
@@ -45,18 +52,28 @@ export default function WhyChooseUs() {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-            Por que estudar na Nacional Treinamentos?
-          </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Há mais de uma década formando profissionais de excelência para a Administração Pública
-          </p>
+          <EditableText
+            contentKey="why_choose_title"
+            defaultValue="Por que estudar na Nacional Treinamentos?"
+            as="h2"
+            className="text-3xl md:text-4xl font-bold text-foreground mb-4"
+            page="home"
+            allowFormatting
+          />
+          <EditableText
+            contentKey="why_choose_subtitle"
+            defaultValue="Há mais de uma década formando profissionais de excelência para a Administração Pública"
+            as="p"
+            className="text-lg text-muted-foreground max-w-2xl mx-auto"
+            page="home"
+            allowFormatting
+          />
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {features.map((feature, index) => (
             <motion.div
-              key={feature.title}
+              key={feature.key}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
@@ -66,8 +83,21 @@ export default function WhyChooseUs() {
               <div className="w-14 h-14 rounded-xl gradient-primary flex items-center justify-center mb-6">
                 <feature.icon className="w-7 h-7 text-primary-foreground" />
               </div>
-              <h3 className="text-xl font-bold text-card-foreground mb-3">{feature.title}</h3>
-              <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
+              <EditableText
+                contentKey={`why_choose_${feature.key}_title`}
+                defaultValue={feature.defaultTitle}
+                as="h3"
+                className="text-xl font-bold text-card-foreground mb-3"
+                page="home"
+              />
+              <EditableText
+                contentKey={`why_choose_${feature.key}_description`}
+                defaultValue={feature.defaultDescription}
+                as="p"
+                className="text-muted-foreground leading-relaxed"
+                page="home"
+                allowFormatting
+              />
             </motion.div>
           ))}
         </div>
