@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Search } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { fetchActiveCourses, categories, Course } from '@/lib/api';
+import EditableText from '@/components/visual-editor/EditableText';
 
 export default function Cursos() {
   const { data: courses = [] } = useQuery<Course[]>({ 
@@ -27,7 +28,7 @@ export default function Cursos() {
   });
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pt-[var(--admin-bar-height,0px)]">
       <Header />
       <main>
         <section className="gradient-primary py-20">
@@ -37,7 +38,7 @@ export default function Cursos() {
               animate={{ opacity: 1, y: 0 }}
               className="text-4xl md:text-5xl font-bold text-primary-foreground mb-6"
             >
-              Nossos Cursos
+              <EditableText contentKey="cursos-titulo" defaultValue="Nossos Cursos" as="span" />
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -45,7 +46,7 @@ export default function Cursos() {
               transition={{ delay: 0.1 }}
               className="text-xl text-primary-foreground/80 max-w-2xl mx-auto"
             >
-              Encontre o curso ideal para sua capacitação profissional
+              <EditableText contentKey="cursos-subtitulo" defaultValue="Encontre o curso ideal para sua capacitação profissional" as="span" />
             </motion.p>
           </div>
         </section>
