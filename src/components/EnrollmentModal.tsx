@@ -78,57 +78,47 @@ export default function EnrollmentModal({ isOpen, onClose, course }: EnrollmentM
   };
 
   const buildWhatsAppMessage = () => {
-    let message = `*🎓 NOVA INSCRIÇÃO!*\n\n`;
-    message += `*📚 Curso:* ${course.title}\n`;
-    message += `*📅 Data:* ${course.course_date || 'A informar'}\n\n`;
+    let message = `*📚 NOVA INSCRIÇÃO DE ALUNO*\n\n`;
     
-    message += `━━━━━━━━━━━━━━━━━━━━━━\n`;
-    message += `*📋 DADOS DA INSCRIÇÃO*\n`;
-    message += `━━━━━━━━━━━━━━━━━━━━━━\n\n`;
-    
+    message += `*Curso:* ${course.title}\n`;
+    message += `*Data:* ${course.course_date || 'A informar'}\n`;
     message += `*Tipo:* ${type === 'pessoa_fisica' ? 'Pessoa Física' : 'Pessoa Jurídica'}\n\n`;
     
-    message += `*Razão Social/Nome:* ${dadosGerais.razao_social}\n`;
-    message += `*Endereço:* ${dadosGerais.endereco}\n`;
-    message += `*Bairro:* ${dadosGerais.bairro}\n`;
-    message += `*CEP:* ${dadosGerais.cep}\n`;
-    message += `*Cidade:* ${dadosGerais.cidade}\n`;
-    message += `*UF:* ${dadosGerais.uf}\n`;
-    message += `*CNPJ/CPF:* ${dadosGerais.cnpj_cpf}\n`;
-    message += `*Tel. Comercial:* ${dadosGerais.telefone_comercial}\n`;
-    message += `*Tel. Celular:* ${dadosGerais.telefone_celular}\n`;
-    message += `*E-mail:* ${dadosGerais.email}\n\n`;
+    message += `*━━━ DADOS GERAIS ━━━*\n\n`;
     
-    message += `━━━━━━━━━━━━━━━━━━━━━━\n`;
-    message += `*👤 RESPONSÁVEL PELA INSCRIÇÃO*\n`;
-    message += `━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+    message += `*Razão Social/Nome:* ${dadosGerais.razao_social || '-'}\n`;
+    message += `*Endereço:* ${dadosGerais.endereco || '-'}\n`;
+    message += `*Bairro:* ${dadosGerais.bairro || '-'}\n`;
+    message += `*CEP:* ${dadosGerais.cep || '-'}\n`;
+    message += `*Cidade:* ${dadosGerais.cidade || '-'}\n`;
+    message += `*UF:* ${dadosGerais.uf || '-'}\n`;
+    message += `*${type === 'pessoa_fisica' ? 'CPF' : 'CNPJ'}:* ${dadosGerais.cnpj_cpf || '-'}\n`;
+    message += `*Tel. Comercial:* ${dadosGerais.telefone_comercial || '-'}\n`;
+    message += `*Tel. Celular:* ${dadosGerais.telefone_celular || '-'}\n`;
+    message += `*E-mail:* ${dadosGerais.email || '-'}\n\n`;
     
-    message += `*Nome:* ${responsavelInscricao.nome}\n`;
-    message += `*Tel. Comercial:* ${responsavelInscricao.telefone_comercial}\n`;
-    message += `*Tel. Celular:* ${responsavelInscricao.telefone_celular}\n`;
-    message += `*E-mail:* ${responsavelInscricao.email}\n\n`;
+    message += `*━━━ RESPONSÁVEL INSCRIÇÃO ━━━*\n\n`;
     
-    message += `━━━━━━━━━━━━━━━━━━━━━━\n`;
-    message += `*💳 RESPONSÁVEL PELO PAGAMENTO*\n`;
-    message += `━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+    message += `*Nome:* ${responsavelInscricao.nome || '-'}\n`;
+    message += `*Tel. Comercial:* ${responsavelInscricao.telefone_comercial || '-'}\n`;
+    message += `*Tel. Celular:* ${responsavelInscricao.telefone_celular || '-'}\n`;
+    message += `*E-mail:* ${responsavelInscricao.email || '-'}\n\n`;
     
-    message += `*Nome:* ${responsavelPagamento.nome}\n`;
-    message += `*Tel. Comercial:* ${responsavelPagamento.telefone_comercial}\n`;
-    message += `*Tel. Celular:* ${responsavelPagamento.telefone_celular}\n`;
-    message += `*E-mail:* ${responsavelPagamento.email}\n\n`;
+    message += `*━━━ RESPONSÁVEL PAGAMENTO ━━━*\n\n`;
     
-    message += `━━━━━━━━━━━━━━━━━━━━━━\n`;
-    message += `*👥 DADOS DOS PARTICIPANTES*\n`;
-    message += `━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+    message += `*Nome:* ${responsavelPagamento.nome || '-'}\n`;
+    message += `*Tel. Comercial:* ${responsavelPagamento.telefone_comercial || '-'}\n`;
+    message += `*Tel. Celular:* ${responsavelPagamento.telefone_celular || '-'}\n`;
+    message += `*E-mail:* ${responsavelPagamento.email || '-'}\n\n`;
+    
+    message += `*━━━ PARTICIPANTES ━━━*\n\n`;
     
     participantes.forEach((p, index) => {
-      if (p.nome) {
-        message += `*Participante ${index + 1}:*\n`;
-        message += `  *Nome:* ${p.nome}\n`;
-        message += `  *Tel. Comercial:* ${p.telefone_comercial}\n`;
-        message += `  *Tel. Celular:* ${p.telefone_celular}\n`;
-        message += `  *E-mail:* ${p.email}\n\n`;
-      }
+      message += `*Participante ${index + 1}:*\n`;
+      message += `Nome: ${p.nome || '-'}\n`;
+      message += `Tel. Comercial: ${p.telefone_comercial || '-'}\n`;
+      message += `Tel. Celular: ${p.telefone_celular || '-'}\n`;
+      message += `E-mail: ${p.email || '-'}\n\n`;
     });
     
     return encodeURIComponent(message);
@@ -138,55 +128,67 @@ export default function EnrollmentModal({ isOpen, onClose, course }: EnrollmentM
     e.preventDefault();
     setIsSubmitting(true);
 
+    // Primeiro, abrir WhatsApp com mensagem formatada (prioridade)
+    const whatsappMessage = buildWhatsAppMessage();
+    window.open(`https://api.whatsapp.com/send?phone=5585989330489&text=${whatsappMessage}`, '_blank');
+
+    // Tentar salvar no banco de dados em segundo plano
     try {
-      // Criar inscrição para cada participante
+      // Criar inscrição para cada participante que tenha dados mínimos
       for (const participante of participantes) {
-        if (!participante.nome || !participante.email || !participante.telefone_celular) {
+        const telefone = participante.telefone_celular || dadosGerais.telefone_celular;
+        const email = participante.email || dadosGerais.email;
+        
+        if (!telefone || !email) {
           continue;
         }
 
-        await createEnrollment({
-          course_id: course.id,
-          course_name: course.title,
-          enrollment_type: type,
-          nome_completo: participante.nome,
-          cpf: dadosGerais.cnpj_cpf,
-          telefone_celular: participante.telefone_celular,
-          email: participante.email,
-          rg: null,
-          data_nascimento: null,
-          cargo: null,
-          matricula: null,
-          setor: null,
-          nome_empresa: dadosGerais.razao_social,
-          cnpj: dadosGerais.cnpj_cpf,
-          telefone_fixo: dadosGerais.telefone_comercial,
-          cep: dadosGerais.cep,
-          endereco: dadosGerais.endereco,
-          numero: null,
-          complemento: null,
-          bairro: dadosGerais.bairro,
-          cidade: dadosGerais.cidade,
-          uf: dadosGerais.uf,
-          responsavel_nome: responsavelInscricao.nome,
-          responsavel_cargo: null,
-          responsavel_telefone: responsavelInscricao.telefone_celular,
-          responsavel_email: responsavelInscricao.email,
-        });
+        try {
+          await createEnrollment({
+            course_id: course.id,
+            course_name: course.title,
+            enrollment_type: type,
+            nome_completo: participante.nome || dadosGerais.razao_social,
+            cpf: dadosGerais.cnpj_cpf,
+            telefone_celular: telefone,
+            email: email,
+            rg: null,
+            data_nascimento: null,
+            cargo: null,
+            matricula: null,
+            setor: null,
+            nome_empresa: dadosGerais.razao_social,
+            cnpj: dadosGerais.cnpj_cpf,
+            telefone_fixo: dadosGerais.telefone_comercial,
+            cep: dadosGerais.cep,
+            endereco: dadosGerais.endereco,
+            numero: null,
+            complemento: null,
+            bairro: dadosGerais.bairro,
+            cidade: dadosGerais.cidade,
+            uf: dadosGerais.uf,
+            responsavel_nome: responsavelInscricao.nome,
+            responsavel_cargo: null,
+            responsavel_telefone: responsavelInscricao.telefone_celular,
+            responsavel_email: responsavelInscricao.email,
+          });
+        } catch (enrollError) {
+          console.error('Error saving enrollment:', enrollError);
+        }
       }
 
-      // Enviar email
+      // Tentar enviar email
       try {
         const participantesInfo = participantes
-          .filter(p => p.nome && p.email)
-          .map(p => `${p.nome} (${p.email}, ${p.telefone_celular})`)
+          .filter(p => p.nome)
+          .map(p => `${p.nome} (${p.email || '-'}, ${p.telefone_celular || '-'})`)
           .join(' | ');
 
         await sendEnrollmentEmail({
           courseName: course.title,
           courseDate: course.course_date || 'A informar',
           enrollmentType: type,
-          nomeCompleto: participantesInfo,
+          nomeCompleto: participantesInfo || dadosGerais.razao_social,
           cpf: dadosGerais.cnpj_cpf,
           telefoneCelular: dadosGerais.telefone_celular,
           email: dadosGerais.email,
@@ -205,36 +207,26 @@ export default function EnrollmentModal({ isOpen, onClose, course }: EnrollmentM
           bairro: dadosGerais.bairro,
           cidade: dadosGerais.cidade,
           uf: dadosGerais.uf,
-          responsavelNome: `Inscrição: ${responsavelInscricao.nome} | Pagamento: ${responsavelPagamento.nome}`,
+          responsavelNome: `Inscrição: ${responsavelInscricao.nome || '-'} | Pagamento: ${responsavelPagamento.nome || '-'}`,
           responsavelCargo: null,
-          responsavelTelefone: `Inscrição: ${responsavelInscricao.telefone_celular} | Pagamento: ${responsavelPagamento.telefone_celular}`,
-          responsavelEmail: `Inscrição: ${responsavelInscricao.email} | Pagamento: ${responsavelPagamento.email}`,
+          responsavelTelefone: `Inscrição: ${responsavelInscricao.telefone_celular || '-'} | Pagamento: ${responsavelPagamento.telefone_celular || '-'}`,
+          responsavelEmail: `Inscrição: ${responsavelInscricao.email || '-'} | Pagamento: ${responsavelPagamento.email || '-'}`,
         });
       } catch (emailError) {
         console.error('Error sending email:', emailError);
       }
-
-      // Abrir WhatsApp com mensagem formatada
-      const whatsappMessage = buildWhatsAppMessage();
-      window.open(`https://api.whatsapp.com/send?phone=5585989330489&text=${whatsappMessage}`, '_blank');
-
-      toast({
-        title: "Inscrição realizada com sucesso!",
-        description: "Você será redirecionado para o WhatsApp para confirmar.",
-      });
-
-      onClose();
-      resetForm();
     } catch (error) {
-      console.error('Enrollment error:', error);
-      toast({
-        title: "Erro ao realizar inscrição",
-        description: "Por favor, tente novamente.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmitting(false);
+      console.error('Background save error:', error);
     }
+
+    toast({
+      title: "Inscrição enviada!",
+      description: "Você foi redirecionado para o WhatsApp para confirmar.",
+    });
+
+    onClose();
+    resetForm();
+    setIsSubmitting(false);
   };
 
   const resetForm = () => {
