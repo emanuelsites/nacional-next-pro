@@ -173,33 +173,42 @@ export async function setUserAsAdmin(userId: string): Promise<void> {
   if (error) throw error;
 }
 
+interface Participante {
+  nome: string;
+  telefone_comercial: string;
+  telefone_celular: string;
+  email: string;
+}
+
 export async function sendEnrollmentEmail(data: {
   courseName: string;
   courseDate: string;
   enrollmentType: string;
-  nomeCompleto: string | null;
-  cpf: string | null;
-  rg: string | null;
-  dataNascimento: string | null;
-  cargo: string | null;
-  matricula: string | null;
-  setor: string | null;
-  nomeEmpresa: string | null;
-  cnpj: string | null;
-  telefoneFixo: string | null;
-  telefoneCelular: string;
-  email: string;
-  cep: string | null;
-  endereco: string | null;
-  numero: string | null;
-  complemento: string | null;
-  bairro: string | null;
-  cidade: string | null;
-  uf: string | null;
-  responsavelNome: string | null;
-  responsavelCargo: string | null;
-  responsavelTelefone: string | null;
-  responsavelEmail: string | null;
+  dadosGerais: {
+    razao_social: string;
+    endereco: string;
+    bairro: string;
+    cep: string;
+    cidade: string;
+    uf: string;
+    cnpj_cpf: string;
+    telefone_comercial: string;
+    telefone_celular: string;
+    email: string;
+  };
+  responsavelInscricao: {
+    nome: string;
+    telefone_comercial: string;
+    telefone_celular: string;
+    email: string;
+  };
+  responsavelPagamento: {
+    nome: string;
+    telefone_comercial: string;
+    telefone_celular: string;
+    email: string;
+  };
+  participantes: Participante[];
 }): Promise<void> {
   const { error } = await supabase.functions.invoke('send-enrollment-email', {
     body: data,
