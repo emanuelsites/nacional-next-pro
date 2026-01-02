@@ -1,42 +1,60 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { SmtpClient } from "https://deno.land/x/smtp@v0.7.0/mod.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+interface Participante {
+  nome: string;
+  telefone_comercial: string;
+  telefone_celular: string;
+  email: string;
+}
+
 interface EnrollmentEmailRequest {
   courseName: string;
   courseDate: string;
   enrollmentType: string;
-  nomeCompleto: string | null;
-  cpf: string | null;
-  rg: string | null;
-  dataNascimento: string | null;
-  cargo: string | null;
-  matricula: string | null;
-  setor: string | null;
-  nomeEmpresa: string | null;
-  cnpj: string | null;
-  telefoneFixo: string | null;
-  telefoneCelular: string;
-  email: string;
-  cep: string | null;
-  endereco: string | null;
-  numero: string | null;
-  complemento: string | null;
-  bairro: string | null;
-  cidade: string | null;
-  uf: string | null;
-  responsavelNome: string | null;
-  responsavelCargo: string | null;
-  responsavelTelefone: string | null;
-  responsavelEmail: string | null;
+  dadosGerais: {
+    razao_social: string;
+    endereco: string;
+    bairro: string;
+    cep: string;
+    cidade: string;
+    uf: string;
+    cnpj_cpf: string;
+    telefone_comercial: string;
+    telefone_celular: string;
+    email: string;
+  };
+  responsavelInscricao: {
+    nome: string;
+    telefone_comercial: string;
+    telefone_celular: string;
+    email: string;
+  };
+  responsavelPagamento: {
+    nome: string;
+    telefone_comercial: string;
+    telefone_celular: string;
+    email: string;
+  };
+  participantes: Participante[];
 }
 
 function buildEmailHtml(data: EnrollmentEmailRequest): string {
   const isPF = data.enrollmentType === "pessoa_fisica";
+  
+  const participantesHtml = data.participantes.map((p, index) => `
+    <div style="margin-bottom: 10px; padding: 10px; background: #f5f5f5; border-radius: 4px;">
+      <strong>Participante ${index + 1}:</strong><br/>
+      Nome: ${p.nome || '-'}<br/>
+      Tel. Comercial: ${p.telefone_comercial || '-'}<br/>
+      Tel. Celular: ${p.telefone_celular || '-'}<br/>
+      E-mail: ${p.email || '-'}
+    </div>
+  `).join('');
   
   return `
 <!DOCTYPE html>
@@ -44,7 +62,7 @@ function buildEmailHtml(data: EnrollmentEmailRequest): string {
 <head>
   <meta charset="UTF-8">
   <style>
-    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }
     .container { max-width: 600px; margin: 0 auto; padding: 20px; }
     .header { background: linear-gradient(135deg, #E84E24, #F5A623); color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
     .content { background: #f9f9f9; padding: 20px; border: 1px solid #ddd; }
@@ -59,8 +77,8 @@ function buildEmailHtml(data: EnrollmentEmailRequest): string {
 <body>
   <div class="container">
     <div class="header">
-      <h1>Nova Inscrição Recebida</h1>
-      <p>Nacional Treinamentos</p>
+      <h1 style="margin: 0;">Nova Inscrição Recebida</h1>
+      <p style="margin: 5px 0 0 0;">Nacional Treinamentos</p>
     </div>
     <div class="content">
       <div class="section">
@@ -70,48 +88,38 @@ function buildEmailHtml(data: EnrollmentEmailRequest): string {
         <div class="field"><span class="label">Tipo de Inscrição:</span> <span class="value">${isPF ? 'Pessoa Física' : 'Pessoa Jurídica'}</span></div>
       </div>
       
-      ${isPF ? `
       <div class="section">
-        <div class="section-title">Dados do Participante</div>
-        <div class="field"><span class="label">Nome Completo:</span> <span class="value">${data.nomeCompleto || '-'}</span></div>
-        <div class="field"><span class="label">CPF:</span> <span class="value">${data.cpf || '-'}</span></div>
-        <div class="field"><span class="label">RG:</span> <span class="value">${data.rg || '-'}</span></div>
-        <div class="field"><span class="label">Data de Nascimento:</span> <span class="value">${data.dataNascimento || '-'}</span></div>
-        <div class="field"><span class="label">Cargo:</span> <span class="value">${data.cargo || '-'}</span></div>
-        <div class="field"><span class="label">Matrícula:</span> <span class="value">${data.matricula || '-'}</span></div>
-        <div class="field"><span class="label">Setor:</span> <span class="value">${data.setor || '-'}</span></div>
+        <div class="section-title">${isPF ? 'Dados Pessoais' : 'Dados da Empresa/Órgão'}</div>
+        <div class="field"><span class="label">Razão Social/Nome:</span> <span class="value">${data.dadosGerais.razao_social || '-'}</span></div>
+        <div class="field"><span class="label">${isPF ? 'CPF' : 'CNPJ'}:</span> <span class="value">${data.dadosGerais.cnpj_cpf || '-'}</span></div>
+        <div class="field"><span class="label">Endereço:</span> <span class="value">${data.dadosGerais.endereco || '-'}</span></div>
+        <div class="field"><span class="label">Bairro:</span> <span class="value">${data.dadosGerais.bairro || '-'}</span></div>
+        <div class="field"><span class="label">CEP:</span> <span class="value">${data.dadosGerais.cep || '-'}</span></div>
+        <div class="field"><span class="label">Cidade/UF:</span> <span class="value">${data.dadosGerais.cidade || '-'} / ${data.dadosGerais.uf || '-'}</span></div>
+        <div class="field"><span class="label">Tel. Comercial:</span> <span class="value">${data.dadosGerais.telefone_comercial || '-'}</span></div>
+        <div class="field"><span class="label">Tel. Celular:</span> <span class="value">${data.dadosGerais.telefone_celular || '-'}</span></div>
+        <div class="field"><span class="label">E-mail:</span> <span class="value">${data.dadosGerais.email || '-'}</span></div>
       </div>
-      ` : `
-      <div class="section">
-        <div class="section-title">Dados da Empresa/Órgão</div>
-        <div class="field"><span class="label">Nome da Empresa/Órgão:</span> <span class="value">${data.nomeEmpresa || '-'}</span></div>
-        <div class="field"><span class="label">CNPJ:</span> <span class="value">${data.cnpj || '-'}</span></div>
-      </div>
+      
       <div class="section">
         <div class="section-title">Responsável pela Inscrição</div>
-        <div class="field"><span class="label">Nome:</span> <span class="value">${data.responsavelNome || '-'}</span></div>
-        <div class="field"><span class="label">Cargo:</span> <span class="value">${data.responsavelCargo || '-'}</span></div>
-        <div class="field"><span class="label">Telefone:</span> <span class="value">${data.responsavelTelefone || '-'}</span></div>
-        <div class="field"><span class="label">E-mail:</span> <span class="value">${data.responsavelEmail || '-'}</span></div>
-      </div>
-      `}
-      
-      <div class="section">
-        <div class="section-title">Contato</div>
-        <div class="field"><span class="label">Telefone Fixo:</span> <span class="value">${data.telefoneFixo || '-'}</span></div>
-        <div class="field"><span class="label">Celular:</span> <span class="value">${data.telefoneCelular || '-'}</span></div>
-        <div class="field"><span class="label">E-mail:</span> <span class="value">${data.email || '-'}</span></div>
+        <div class="field"><span class="label">Nome:</span> <span class="value">${data.responsavelInscricao.nome || '-'}</span></div>
+        <div class="field"><span class="label">Tel. Comercial:</span> <span class="value">${data.responsavelInscricao.telefone_comercial || '-'}</span></div>
+        <div class="field"><span class="label">Tel. Celular:</span> <span class="value">${data.responsavelInscricao.telefone_celular || '-'}</span></div>
+        <div class="field"><span class="label">E-mail:</span> <span class="value">${data.responsavelInscricao.email || '-'}</span></div>
       </div>
       
       <div class="section">
-        <div class="section-title">Endereço</div>
-        <div class="field"><span class="label">CEP:</span> <span class="value">${data.cep || '-'}</span></div>
-        <div class="field"><span class="label">Logradouro:</span> <span class="value">${data.endereco || '-'}</span></div>
-        <div class="field"><span class="label">Número:</span> <span class="value">${data.numero || '-'}</span></div>
-        <div class="field"><span class="label">Complemento:</span> <span class="value">${data.complemento || '-'}</span></div>
-        <div class="field"><span class="label">Bairro:</span> <span class="value">${data.bairro || '-'}</span></div>
-        <div class="field"><span class="label">Cidade:</span> <span class="value">${data.cidade || '-'}</span></div>
-        <div class="field"><span class="label">UF:</span> <span class="value">${data.uf || '-'}</span></div>
+        <div class="section-title">Responsável pelo Pagamento</div>
+        <div class="field"><span class="label">Nome:</span> <span class="value">${data.responsavelPagamento.nome || '-'}</span></div>
+        <div class="field"><span class="label">Tel. Comercial:</span> <span class="value">${data.responsavelPagamento.telefone_comercial || '-'}</span></div>
+        <div class="field"><span class="label">Tel. Celular:</span> <span class="value">${data.responsavelPagamento.telefone_celular || '-'}</span></div>
+        <div class="field"><span class="label">E-mail:</span> <span class="value">${data.responsavelPagamento.email || '-'}</span></div>
+      </div>
+      
+      <div class="section">
+        <div class="section-title">Participantes (${data.participantes.length})</div>
+        ${participantesHtml}
       </div>
     </div>
     <div class="footer">
@@ -123,6 +131,105 @@ function buildEmailHtml(data: EnrollmentEmailRequest): string {
   `;
 }
 
+async function sendEmailViaSMTP(
+  smtpHost: string,
+  smtpPort: number,
+  username: string,
+  password: string,
+  from: string,
+  to: string,
+  subject: string,
+  htmlContent: string
+): Promise<void> {
+  const encoder = new TextEncoder();
+  const decoder = new TextDecoder();
+
+  console.log(`Connecting to ${smtpHost}:${smtpPort}...`);
+  
+  const conn = await Deno.connect({
+    hostname: smtpHost,
+    port: smtpPort,
+  });
+
+  const read = async (): Promise<string> => {
+    const buffer = new Uint8Array(1024);
+    const n = await conn.read(buffer);
+    if (n === null) return "";
+    return decoder.decode(buffer.subarray(0, n));
+  };
+
+  const write = async (data: string): Promise<void> => {
+    await conn.write(encoder.encode(data + "\r\n"));
+  };
+
+  const sendCommand = async (command: string, expectedCode?: string): Promise<string> => {
+    console.log(`> ${command.startsWith("AUTH") ? "AUTH ***" : command}`);
+    await write(command);
+    const response = await read();
+    console.log(`< ${response.trim()}`);
+    if (expectedCode && !response.startsWith(expectedCode)) {
+      throw new Error(`SMTP Error: Expected ${expectedCode}, got: ${response}`);
+    }
+    return response;
+  };
+
+  try {
+    // Read greeting
+    const greeting = await read();
+    console.log(`< ${greeting.trim()}`);
+
+    // EHLO
+    await sendCommand(`EHLO localhost`, "250");
+
+    // AUTH LOGIN
+    await sendCommand("AUTH LOGIN", "334");
+    
+    // Send username (base64)
+    await sendCommand(btoa(username), "334");
+    
+    // Send password (base64)
+    await sendCommand(btoa(password), "235");
+
+    // MAIL FROM
+    await sendCommand(`MAIL FROM:<${from}>`, "250");
+
+    // RCPT TO
+    await sendCommand(`RCPT TO:<${to}>`, "250");
+
+    // DATA
+    await sendCommand("DATA", "354");
+
+    // Create email content with headers
+    const boundary = "----=_Part_0_" + Date.now();
+    const emailContent = [
+      `From: ${from}`,
+      `To: ${to}`,
+      `Subject: =?UTF-8?B?${btoa(unescape(encodeURIComponent(subject)))}?=`,
+      `MIME-Version: 1.0`,
+      `Content-Type: multipart/alternative; boundary="${boundary}"`,
+      ``,
+      `--${boundary}`,
+      `Content-Type: text/html; charset=UTF-8`,
+      `Content-Transfer-Encoding: base64`,
+      ``,
+      btoa(unescape(encodeURIComponent(htmlContent))),
+      ``,
+      `--${boundary}--`,
+      `.`
+    ].join("\r\n");
+
+    await conn.write(encoder.encode(emailContent + "\r\n"));
+    const dataResponse = await read();
+    console.log(`< ${dataResponse.trim()}`);
+
+    // QUIT
+    await sendCommand("QUIT", "221");
+
+  } finally {
+    conn.close();
+  }
+}
+
 const handler = async (req: Request): Promise<Response> => {
   console.log("Received request to send enrollment email");
   
@@ -132,7 +239,7 @@ const handler = async (req: Request): Promise<Response> => {
 
   try {
     const data: EnrollmentEmailRequest = await req.json();
-    console.log("Enrollment data received for:", data.nomeCompleto || data.nomeEmpresa);
+    console.log("Enrollment data received for:", data.dadosGerais.razao_social);
 
     const smtpUser = Deno.env.get("SMTP_USER");
     const smtpPassword = Deno.env.get("SMTP_PASSWORD");
@@ -142,44 +249,35 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error("SMTP credentials not configured");
     }
 
-    const participantName = data.nomeCompleto || data.nomeEmpresa || 'Participante';
+    const participantName = data.dadosGerais.razao_social || 'Participante';
     const htmlContent = buildEmailHtml(data);
     const subject = `Nova Inscrição: ${data.courseName} - ${participantName}`;
 
-    console.log("Connecting to SMTP server...");
-    
-    const client = new SmtpClient();
-    
-    await client.connectTLS({
-      hostname: "mail.nacionaltreinamentos.com.br",
-      port: 587,
-      username: smtpUser,
-      password: smtpPassword,
-    });
-
-    console.log("Connected, sending email to main recipient...");
-
     // Send to main recipient
-    await client.send({
-      from: smtpUser,
-      to: "contato@nacionaltreinamentos.com.br",
-      subject: subject,
-      content: "text/html",
-      html: htmlContent,
-    });
-
-    console.log("Sending copy to BCC...");
+    console.log("Sending email to contato@nacionaltreinamentos.com.br...");
+    await sendEmailViaSMTP(
+      "mail.nacionaltreinamentos.com.br",
+      587,
+      smtpUser,
+      smtpPassword,
+      smtpUser,
+      "contato@nacionaltreinamentos.com.br",
+      subject,
+      htmlContent
+    );
 
     // Send copy to BCC recipient
-    await client.send({
-      from: smtpUser,
-      to: "emanuel001@gmail.com",
-      subject: subject,
-      content: "text/html",
-      html: htmlContent,
-    });
-
-    await client.close();
+    console.log("Sending copy to emanuel001@gmail.com...");
+    await sendEmailViaSMTP(
+      "mail.nacionaltreinamentos.com.br",
+      587,
+      smtpUser,
+      smtpPassword,
+      smtpUser,
+      "emanuel001@gmail.com",
+      subject,
+      htmlContent
+    );
 
     console.log("Emails sent successfully");
 
