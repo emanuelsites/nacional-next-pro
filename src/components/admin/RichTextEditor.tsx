@@ -1,4 +1,4 @@
-import { useMemo, useRef, useCallback, useEffect } from 'react';
+import { useMemo, useRef, useCallback, useEffect, useState } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
@@ -51,6 +51,7 @@ const formats = [
 
 export default function RichTextEditor({ value, onChange, placeholder }: RichTextEditorProps) {
   const quillRef = useRef<ReactQuill>(null);
+  const [editorReady, setEditorReady] = useState(false);
 
   const insertDivider = useCallback(() => {
     const quill = quillRef.current?.getEditor();
@@ -65,7 +66,22 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
 
   const modules = useMemo(() => ({
     toolbar: {
-      container: '#toolbar',
+      container: [
+        [{ 'header': [1, 2, 3, false] }],
+        [{ 'size': fontSizes }],
+        ['bold', 'italic', 'underline', 'strike'],
+        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+        [{ 'indent': '-1'}, { 'indent': '+1' }],
+        [{ 'color': [] }, { 'background': [] }],
+        [{ 'align': [] }],
+        ['link', 'image', 'divider'],
+        ['clean']
+      ],
+      handlers: {
+        divider: function() {
+          // Placeholder - will be replaced after mount
+        }
+      }
     },
     clipboard: {
       matchVisual: false,
@@ -73,47 +89,19 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
   }), []);
 
   useEffect(() => {
-    const quill = quillRef.current?.getEditor();
-    if (quill) {
-      const toolbar = quill.getModule('toolbar');
-      toolbar.addHandler('divider', insertDivider);
+    if (editorReady) {
+      const quill = quillRef.current?.getEditor();
+      if (quill) {
+        const toolbar = quill.getModule('toolbar');
+        if (toolbar) {
+          toolbar.addHandler('divider', insertDivider);
+        }
+      }
     }
-  }, [insertDivider]);
+  }, [editorReady, insertDivider]);
 
   return (
     <div className="rich-text-editor">
-      <div id="toolbar">
-        <select className="ql-header" defaultValue="">
-          <option value="1">Título 1</option>
-          <option value="2">Título 2</option>
-          <option value="3">Título 3</option>
-          <option value="">Normal</option>
-        </select>
-        <select className="ql-size" defaultValue="">
-          {fontSizes.map(size => (
-            <option key={size} value={size}>{size}</option>
-          ))}
-        </select>
-        <button className="ql-bold" />
-        <button className="ql-italic" />
-        <button className="ql-underline" />
-        <button className="ql-strike" />
-        <button className="ql-list" value="ordered" />
-        <button className="ql-list" value="bullet" />
-        <button className="ql-indent" value="-1" />
-        <button className="ql-indent" value="+1" />
-        <select className="ql-color" />
-        <select className="ql-background" />
-        <select className="ql-align" />
-        <button className="ql-link" />
-        <button className="ql-image" />
-        <button className="ql-divider" title="Inserir linha divisória">
-          <svg viewBox="0 0 18 18" style={{ width: '18px', height: '18px' }}>
-            <line x1="0" y1="9" x2="18" y2="9" stroke="currentColor" strokeWidth="2" />
-          </svg>
-        </button>
-        <button className="ql-clean" />
-      </div>
       <ReactQuill
         ref={quillRef}
         theme="snow"
@@ -123,19 +111,16 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
         formats={formats}
         placeholder={placeholder}
         className="bg-background rounded-lg"
+        onChangeSelection={() => {
+          if (!editorReady) setEditorReady(true);
+        }}
       />
       <style>{`
-        .rich-text-editor .ql-toolbar,
-        .rich-text-editor #toolbar {
+        .rich-text-editor .ql-toolbar {
           border-color: hsl(var(--border));
           border-radius: 0.5rem 0.5rem 0 0;
           background: hsl(var(--muted));
           flex-wrap: wrap;
-          border: 1px solid hsl(var(--border));
-          padding: 8px;
-          display: flex;
-          gap: 4px;
-          align-items: center;
         }
         .rich-text-editor .ql-container {
           border-color: hsl(var(--border));
@@ -189,13 +174,15 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
         .rich-text-editor .ql-snow .ql-picker.ql-size {
           width: 80px;
         }
-        .rich-text-editor .ql-divider {
-          display: flex;
-          align-items: center;
-          justify-content: center;
+        .rich-text-editor .ql-snow .ql-toolbar button.ql-divider,
+        .rich-text-editor .ql-snow.ql-toolbar button.ql-divider {
+          width: 28px;
+          padding: 3px 5px;
         }
-        .rich-text-editor .ql-divider svg {
-          stroke: hsl(var(--foreground));
+        .rich-text-editor .ql-snow .ql-toolbar button.ql-divider::after,
+        .rich-text-editor .ql-snow.ql-toolbar button.ql-divider::after {
+          content: '—';
+          font-weight: bold;
         }
       `}</style>
     </div>
