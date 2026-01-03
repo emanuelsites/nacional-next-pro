@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import Header from '@/components/Header';
@@ -20,6 +20,11 @@ export default function CursoDetalhe() {
     enabled: !!id,
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Scroll to top when component mounts or id changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [id]);
 
   const handlePrint = () => {
     window.print();

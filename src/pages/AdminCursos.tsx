@@ -1,17 +1,19 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Edit2, Trash2, Search } from 'lucide-react';
+import { Plus, Edit2, Trash2, Search, Sparkles, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { fetchCourses, deleteCourse, Course } from '@/lib/api';
+import { supabase } from '@/integrations/supabase/client';
 import CourseFormModal from '@/components/admin/CourseFormModal';
 
 export default function AdminCursos() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCourse, setEditingCourse] = useState<Course | null>(null);
+  const [generatingImageId, setGeneratingImageId] = useState<string | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -46,6 +48,39 @@ export default function AdminCursos() {
   const handleModalClose = () => {
     setIsModalOpen(false);
     setEditingCourse(null);
+  };
+
+  const handleGenerateImage = async (course: Course) => {
+    setGeneratingImageId(course.id);
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-course-image', {
+        body: {
+          courseTitle: course.title,
+          courseCategory: course.category,
+          courseId: course.id,
+        },
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      toast({ title: 'Imagem gerada com sucesso!' });
+      queryClient.invalidateQueries({ queryKey: ['admin-courses'] });
+    } catch (error: any) {
+      console.error('Error generating image:', error);
+      toast({ 
+        title: 'Erro ao gerar imagem', 
+        description: error.message || 'Tente novamente mais tarde',
+        variant: 'destructive' 
+      });
+    } finally {
+      setGeneratingImageId(null);
+    }
   };
 
   return (
@@ -110,6 +145,19 @@ export default function AdminCursos() {
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex justify-end gap-2">
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          onClick={() => handleGenerateImage(course)}
+                          disabled={generatingImageId === course.id}
+                          title="Gerar imagem com IA"
+                        >
+                          {generatingImageId === course.id ? (
+                            <Loader2 className="w-4 h-4 animate-spin text-primary" />
+                          ) : (
+                            <Sparkles className="w-4 h-4 text-primary" />
+                          )}
+                        </Button>
                         <Button variant="ghost" size="icon" onClick={() => handleEdit(course)}>
                           <Edit2 className="w-4 h-4" />
                         </Button>
