@@ -239,8 +239,7 @@ export default function CursoDetalhe() {
                     </p>
                     <Button 
                       size="lg" 
-                      variant="secondary"
-                      className="text-primary font-semibold px-8"
+                      className="bg-green-500 hover:bg-green-600 text-white font-semibold px-8 animate-[pulse_2s_cubic-bezier(0.4,0,0.6,1)_infinite]"
                       onClick={() => setIsModalOpen(true)}
                     >
                       Fazer Inscrição
