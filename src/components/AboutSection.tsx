@@ -41,30 +41,6 @@ export default function AboutSection() {
               <div className="absolute inset-0 rounded-full border-2 border-primary/20 animate-ping" style={{ animationDuration: '3s' }} />
               <div className="absolute inset-4 rounded-full border border-primary/10" />
             </div>
-            
-            {/* Stats Card */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              viewport={{ once: true }}
-              className="absolute -bottom-8 -right-8 bg-card p-8 rounded-2xl shadow-xl border border-border"
-            >
-              <EditableText
-                contentKey="about_years"
-                defaultValue="+18"
-                as="div"
-                className="text-4xl font-bold text-primary mb-2"
-                page="home"
-              />
-              <EditableText
-                contentKey="about_years_label"
-                defaultValue="Anos de experiência"
-                as="p"
-                className="text-muted-foreground"
-                page="home"
-              />
-            </motion.div>
 
             {/* Decorative */}
             <div className="absolute -top-4 -left-4 w-24 h-24 rounded-2xl gradient-primary opacity-20" />
