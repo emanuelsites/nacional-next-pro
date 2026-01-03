@@ -7,31 +7,44 @@ import { Button } from '@/components/ui/button';
 import { fetchActiveCourses, Course } from '@/lib/api';
 
 export default function HeroCarousel() {
-  const { data: courses = [] } = useQuery<Course[]>({ 
+  const { data: courses = [], isLoading } = useQuery<Course[]>({ 
     queryKey: ['active-courses'], 
     queryFn: fetchActiveCourses 
   });
   
-  const featuredCourses = courses.filter(c => c.featured);
+  // Use all courses for the carousel
+  const carouselCourses = courses;
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  // Reset index when courses change
   useEffect(() => {
-    if (featuredCourses.length === 0) return;
+    if (currentIndex >= carouselCourses.length && carouselCourses.length > 0) {
+      setCurrentIndex(0);
+    }
+  }, [carouselCourses.length, currentIndex]);
+
+  // Autoplay - advances every 5 seconds
+  useEffect(() => {
+    if (carouselCourses.length <= 1) return;
+    
     const timer = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % featuredCourses.length);
-    }, 6000);
+      setCurrentIndex((prev) => (prev + 1) % carouselCourses.length);
+    }, 5000);
+    
     return () => clearInterval(timer);
-  }, [featuredCourses.length]);
+  }, [carouselCourses.length]);
 
   const goToPrevious = () => {
-    setCurrentIndex((prev) => (prev - 1 + featuredCourses.length) % featuredCourses.length);
+    if (carouselCourses.length === 0) return;
+    setCurrentIndex((prev) => (prev - 1 + carouselCourses.length) % carouselCourses.length);
   };
 
   const goToNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % featuredCourses.length);
+    if (carouselCourses.length === 0) return;
+    setCurrentIndex((prev) => (prev + 1) % carouselCourses.length);
   };
 
-  if (featuredCourses.length === 0) {
+  if (isLoading || carouselCourses.length === 0) {
     return (
       <section className="relative h-[60vh] min-h-[400px] gradient-primary flex items-center justify-center">
         <div className="text-center text-primary-foreground">
@@ -42,7 +55,7 @@ export default function HeroCarousel() {
     );
   }
 
-  const currentCourse = featuredCourses[currentIndex];
+  const currentCourse = carouselCourses[currentIndex];
 
   return (
     <section className="relative h-[80vh] min-h-[600px] overflow-hidden">
@@ -117,22 +130,38 @@ export default function HeroCarousel() {
         </AnimatePresence>
       </div>
 
-      <button onClick={goToPrevious} className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-background/20 backdrop-blur-sm flex items-center justify-center text-background hover:bg-primary transition-colors">
-        <ChevronLeft className="w-6 h-6" />
-      </button>
-      <button onClick={goToNext} className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-background/20 backdrop-blur-sm flex items-center justify-center text-background hover:bg-primary transition-colors">
-        <ChevronRight className="w-6 h-6" />
-      </button>
+      {carouselCourses.length > 1 && (
+        <>
+          <button 
+            onClick={goToPrevious} 
+            className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-background/20 backdrop-blur-sm flex items-center justify-center text-background hover:bg-primary transition-colors z-10 cursor-pointer"
+            type="button"
+            aria-label="Slide anterior"
+          >
+            <ChevronLeft className="w-6 h-6" />
+          </button>
+          <button 
+            onClick={goToNext} 
+            className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-background/20 backdrop-blur-sm flex items-center justify-center text-background hover:bg-primary transition-colors z-10 cursor-pointer"
+            type="button"
+            aria-label="Próximo slide"
+          >
+            <ChevronRight className="w-6 h-6" />
+          </button>
 
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3">
-        {featuredCourses.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => setCurrentIndex(index)}
-            className={`h-2 rounded-full transition-all duration-300 ${index === currentIndex ? 'w-8 bg-primary' : 'w-2 bg-background/50 hover:bg-background/80'}`}
-          />
-        ))}
-      </div>
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3 z-10">
+            {carouselCourses.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentIndex(index)}
+                type="button"
+                aria-label={`Ir para slide ${index + 1}`}
+                className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${index === currentIndex ? 'w-8 bg-primary' : 'w-2 bg-background/50 hover:bg-background/80'}`}
+              />
+            ))}
+          </div>
+        </>
+      )}
     </section>
   );
 }

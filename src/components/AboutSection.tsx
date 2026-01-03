@@ -3,30 +3,43 @@ import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import EditableText from '@/components/visual-editor/EditableText';
-import EditableImage from '@/components/visual-editor/EditableImage';
+import logo from '@/assets/logo.png';
 
 export default function AboutSection() {
   return (
     <section className="py-20 bg-background overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          {/* Image */}
+          {/* Logo with Effects */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
-            className="relative"
+            className="relative flex items-center justify-center"
           >
-            <div className="relative rounded-2xl overflow-hidden shadow-2xl">
-              <EditableImage
-                contentKey="about_image"
-                defaultSrc="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=800&q=80"
-                alt="Treinamento profissional em sala de aula"
-                className="w-full h-[500px] object-cover"
-                page="home"
+            <div className="relative p-12 rounded-2xl bg-gradient-to-br from-primary/10 via-background to-primary/5">
+              {/* Glow effect */}
+              <div className="absolute inset-0 rounded-2xl bg-primary/20 blur-3xl animate-pulse" />
+              
+              {/* Logo */}
+              <motion.img
+                src={logo}
+                alt="Nacional Treinamentos"
+                className="relative z-10 w-80 h-auto drop-shadow-2xl"
+                animate={{ 
+                  scale: [1, 1.02, 1],
+                }}
+                transition={{ 
+                  duration: 3, 
+                  repeat: Infinity,
+                  ease: "easeInOut" 
+                }}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-primary/30 to-transparent pointer-events-none" />
+              
+              {/* Decorative rings */}
+              <div className="absolute inset-0 rounded-full border-2 border-primary/20 animate-ping" style={{ animationDuration: '3s' }} />
+              <div className="absolute inset-4 rounded-full border border-primary/10" />
             </div>
             
             {/* Stats Card */}
@@ -39,7 +52,7 @@ export default function AboutSection() {
             >
               <EditableText
                 contentKey="about_years"
-                defaultValue="+10"
+                defaultValue="+18"
                 as="div"
                 className="text-4xl font-bold text-primary mb-2"
                 page="home"
