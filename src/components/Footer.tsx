@@ -10,17 +10,17 @@ export default function Footer() {
       <div className="container mx-auto px-4 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* Logo & About */}
-          <div className="space-y-6">
+          <div className="space-y-6 text-center">
             <img 
               src={logo} 
               alt="Nacional Treinamentos" 
-              className="h-12 w-auto brightness-0 invert"
+              className="h-12 w-auto brightness-0 invert mx-auto"
             />
             <EditableText
               contentKey="footer_about"
               defaultValue="A Nacional Treinamentos é uma empresa fundada por profissionais oriundos de empresas de auditoria e consultoria, com sólida experiência em empresas nacionais e transnacionais."
               as="p"
-              className="text-background/70 leading-relaxed"
+              className="text-background/70 leading-relaxed text-center"
               page="global"
               allowFormatting
             />

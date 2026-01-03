@@ -19,15 +19,13 @@ const Index = () => {
     queryFn: fetchActiveCourses 
   });
 
-  const featuredCourses = courses.filter(c => c.featured);
-
   return (
     <div className="min-h-screen bg-background pt-[var(--admin-bar-height,0px)]">
       <Header />
       <main>
         <HeroCarousel />
         
-        {/* Featured Courses */}
+        {/* All Courses */}
         <section className="py-20 bg-background">
           <div className="container mx-auto px-4">
             <motion.div
@@ -43,7 +41,7 @@ const Index = () => {
             </motion.div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {featuredCourses.slice(0, 3).map((course, index) => (
+              {courses.map((course, index) => (
                 <CourseCard key={course.id} course={course} index={index} />
               ))}
             </div>

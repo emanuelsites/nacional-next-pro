@@ -12,7 +12,7 @@ export default function HeroCarousel() {
     queryFn: fetchActiveCourses 
   });
   
-  const featuredCourses = courses.filter(c => c.featured).slice(0, 4);
+  const featuredCourses = courses.filter(c => c.featured);
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {

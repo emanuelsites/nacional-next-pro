@@ -21,8 +21,8 @@ export default function AboutSection() {
             <div className="relative rounded-2xl overflow-hidden shadow-2xl">
               <EditableImage
                 contentKey="about_image"
-                defaultSrc="https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&q=80"
-                alt="Equipe Nacional Treinamentos"
+                defaultSrc="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=800&q=80"
+                alt="Treinamento profissional em sala de aula"
                 className="w-full h-[500px] object-cover"
                 page="home"
               />
@@ -68,7 +68,7 @@ export default function AboutSection() {
               contentKey="about_title"
               defaultValue="Capacitando profissionais para a Administração Pública"
               as="h2"
-              className="text-3xl md:text-4xl font-bold text-foreground mb-6 leading-tight"
+              className="text-3xl md:text-4xl font-bold text-foreground mb-6 leading-tight text-center lg:text-left"
               page="home"
               allowFormatting
             />
