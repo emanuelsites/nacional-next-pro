@@ -52,8 +52,7 @@ export default function EditableText({
 
   const handleInput = () => {
     if (contentRef.current) {
-      const html = allowFormatting ? contentRef.current.innerHTML : contentRef.current.textContent || '';
-      updateContent(contentKey, html, allowFormatting ? 'html' : 'text', page);
+      updateContent(contentKey, contentRef.current.innerHTML, 'html', page);
     }
   };
 
@@ -71,10 +70,8 @@ export default function EditableText({
     return (
       <Component 
         className={className}
-        dangerouslySetInnerHTML={allowFormatting ? { __html: content } : undefined}
-      >
-        {!allowFormatting ? displayContent : undefined}
-      </Component>
+        dangerouslySetInnerHTML={{ __html: content }}
+      />
     );
   }
 
@@ -84,7 +81,7 @@ export default function EditableText({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => !showToolbar && setIsHovered(false)}
     >
-      {allowFormatting && showToolbar && (
+      {showToolbar && (
         <div className="absolute -top-12 left-0 z-50 bg-background border border-border rounded-lg shadow-lg p-1 flex items-center gap-1">
           <Button
             size="icon"
@@ -180,10 +177,8 @@ export default function EditableText({
           handleInput();
         }}
         onInput={handleInput}
-        dangerouslySetInnerHTML={allowFormatting ? { __html: content } : undefined}
-      >
-        {!allowFormatting ? content : undefined}
-      </Component>
+        dangerouslySetInnerHTML={{ __html: content }}
+      />
 
       {isHovered && !showToolbar && (
         <div className="absolute -top-6 left-0 bg-primary text-primary-foreground text-xs px-2 py-1 rounded">
