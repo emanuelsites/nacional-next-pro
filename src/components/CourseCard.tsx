@@ -59,9 +59,11 @@ export default function CourseCard({ course, index = 0 }: CourseCardProps) {
 
         <div className="p-5 space-y-3">
           <p className="text-xs text-primary font-medium uppercase tracking-wide">{course.category}</p>
-          <h3 className="font-semibold text-card-foreground line-clamp-2 group-hover:text-primary transition-colors">
-            {course.title}
-          </h3>
+          <Link to={`/curso/${course.id}`}>
+            <h3 className="font-semibold text-card-foreground line-clamp-2 group-hover:text-primary transition-colors hover:underline cursor-pointer">
+              {course.title}
+            </h3>
+          </Link>
 
           <div className="flex items-center gap-3 text-xs text-muted-foreground pt-2">
             <div className="flex items-center gap-1">
