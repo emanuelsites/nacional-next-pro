@@ -3,47 +3,39 @@ import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import EditableText from '@/components/visual-editor/EditableText';
-import logo from '@/assets/logo.png';
+import officeImage from '@/assets/office-team.jpg';
 
 export default function AboutSection() {
   return (
     <section className="py-20 bg-background overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          {/* Logo with Effects */}
+          {/* Office Image */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
-            className="relative flex items-center justify-center"
+            className="relative"
           >
-            <div className="relative p-12 rounded-2xl bg-gradient-to-br from-primary/10 via-background to-primary/5">
+            <div className="relative rounded-2xl overflow-hidden shadow-2xl">
               {/* Glow effect */}
-              <div className="absolute inset-0 rounded-2xl bg-primary/20 blur-3xl animate-pulse" />
+              <div className="absolute inset-0 bg-primary/20 blur-3xl animate-pulse -z-10" />
               
-              {/* Logo */}
-              <motion.img
-                src={logo}
-                alt="Nacional Treinamentos"
-                className="relative z-10 w-80 h-auto drop-shadow-2xl"
-                animate={{ 
-                  scale: [1, 1.02, 1],
-                }}
-                transition={{ 
-                  duration: 3, 
-                  repeat: Infinity,
-                  ease: "easeInOut" 
-                }}
+              {/* Image */}
+              <img
+                src={officeImage}
+                alt="Profissionais trabalhando em escritório"
+                className="w-full h-auto rounded-2xl object-cover"
               />
               
-              {/* Decorative rings */}
-              <div className="absolute inset-0 rounded-full border-2 border-primary/20 animate-ping" style={{ animationDuration: '3s' }} />
-              <div className="absolute inset-4 rounded-full border border-primary/10" />
+              {/* Overlay gradient */}
+              <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent rounded-2xl" />
             </div>
 
             {/* Decorative */}
             <div className="absolute -top-4 -left-4 w-24 h-24 rounded-2xl gradient-primary opacity-20" />
+            <div className="absolute -bottom-4 -right-4 w-32 h-32 rounded-2xl bg-primary/10" />
           </motion.div>
 
           {/* Content */}
@@ -55,9 +47,9 @@ export default function AboutSection() {
           >
             <EditableText
               contentKey="about_title"
-              defaultValue="Capacitando profissionais para a Administração Pública"
+              defaultValue="Há 18 anos capacitando profissionais para a Administração Pública"
               as="h2"
-              className="text-3xl md:text-4xl font-bold text-foreground mb-6 leading-tight text-center lg:text-left"
+              className="text-3xl md:text-4xl font-bold text-foreground mb-6 leading-tight"
               page="home"
               allowFormatting
             />
@@ -66,7 +58,7 @@ export default function AboutSection() {
               contentKey="about_description_1"
               defaultValue="A Nacional Treinamentos é uma empresa fundada por profissionais oriundos de empresas de auditoria e consultoria, com sólida experiência em empresas nacionais e transnacionais."
               as="p"
-              className="text-muted-foreground text-lg leading-relaxed mb-6"
+              className="text-muted-foreground text-lg leading-relaxed mb-6 text-left"
               page="home"
               allowFormatting
             />
@@ -75,7 +67,7 @@ export default function AboutSection() {
               contentKey="about_description_2"
               defaultValue="Nossa missão é capacitar servidores públicos e profissionais da iniciativa privada com conhecimentos atualizados e práticos, contribuindo para uma gestão pública mais eficiente, transparente e moderna. Oferecemos cursos presenciais em diversas capitais do Brasil e também na modalidade online, com a mesma qualidade e excelência."
               as="p"
-              className="text-muted-foreground leading-relaxed mb-8"
+              className="text-muted-foreground leading-relaxed mb-8 text-left"
               page="home"
               allowFormatting
             />
