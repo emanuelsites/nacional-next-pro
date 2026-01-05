@@ -26,8 +26,25 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    // Generate prompt based on course info
-    const prompt = `Professional corporate training course cover image. Theme: ${courseCategory || 'business training'}. Topic: ${courseTitle}. Modern, clean design with blue and white color scheme. Business professionals in a modern office or training environment. High quality, photorealistic, suitable for educational content. No text overlay.`;
+    // Generate prompt based on course info with specific context
+    let contextualPrompt = '';
+    const titleLower = courseTitle.toLowerCase();
+    
+    if (titleLower.includes('licitaç') || titleLower.includes('contrato') || titleLower.includes('pregoeir')) {
+      contextualPrompt = 'Government officials in formal meeting room reviewing bidding documents and contracts, official procurement process, digital screens showing analytics, Brazilian government office setting, professional atmosphere';
+    } else if (titleLower.includes('patrimoni') || titleLower.includes('almoxarifado') || titleLower.includes('desfazimento')) {
+      contextualPrompt = 'Modern warehouse with organized inventory shelves, professionals managing asset control on computers, property management system, clean corporate storage facility';
+    } else if (titleLower.includes('convênio') || titleLower.includes('siconv')) {
+      contextualPrompt = 'Government officials reviewing partnership agreements and federal transfers, collaborative meeting about public agreements, formal office with documents and laptops';
+    } else if (titleLower.includes('orçament') || titleLower.includes('contabil')) {
+      contextualPrompt = 'Finance professionals analyzing budget spreadsheets and accounting reports, public sector financial planning, modern office with charts and graphs on screens';
+    } else if (titleLower.includes('pessoal') || titleLower.includes('rh') || titleLower.includes('recursos humanos')) {
+      contextualPrompt = 'HR professionals in training session about personnel legislation, employment law seminar, corporate training room with diverse professionals';
+    } else {
+      contextualPrompt = 'Professional corporate training seminar for public administration, government employees in modern training center, business presentation setting';
+    }
+    
+    const prompt = `${contextualPrompt}. High quality corporate photography, professional lighting, 16:9 aspect ratio, photorealistic, no text overlay. Ultra high resolution.`;
 
     console.log("Generating image with prompt:", prompt);
 

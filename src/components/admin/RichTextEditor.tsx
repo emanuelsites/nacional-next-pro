@@ -176,13 +176,43 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
         }
         .rich-text-editor .ql-snow .ql-toolbar button.ql-divider,
         .rich-text-editor .ql-snow.ql-toolbar button.ql-divider {
-          width: 28px;
+          width: 32px;
           padding: 3px 5px;
+          position: relative;
+          background: hsl(var(--primary) / 0.1);
+          border-radius: 4px;
+          margin: 0 2px;
+        }
+        .rich-text-editor .ql-snow .ql-toolbar button.ql-divider:hover,
+        .rich-text-editor .ql-snow.ql-toolbar button.ql-divider:hover {
+          background: hsl(var(--primary) / 0.2);
         }
         .rich-text-editor .ql-snow .ql-toolbar button.ql-divider::after,
         .rich-text-editor .ql-snow.ql-toolbar button.ql-divider::after {
-          content: '—';
+          content: '━━';
           font-weight: bold;
+          font-size: 10px;
+          color: hsl(var(--primary));
+        }
+        .rich-text-editor .ql-snow .ql-toolbar button.ql-divider[title]::before {
+          content: 'Linha Separadora';
+          position: absolute;
+          bottom: -24px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: hsl(var(--foreground));
+          color: hsl(var(--background));
+          padding: 2px 6px;
+          border-radius: 4px;
+          font-size: 10px;
+          white-space: nowrap;
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity 0.2s;
+          z-index: 100;
+        }
+        .rich-text-editor .ql-snow .ql-toolbar button.ql-divider:hover::before {
+          opacity: 1;
         }
       `}</style>
     </div>
