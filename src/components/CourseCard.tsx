@@ -24,7 +24,7 @@ export default function CourseCard({ course, index = 0 }: CourseCardProps) {
         viewport={{ once: true }}
         className="group bg-card rounded-2xl overflow-hidden shadow-card card-hover border border-border"
       >
-        <Link to={`/curso/${course.id}`} className="relative h-48 overflow-hidden block">
+        <Link to={`/curso/${course.slug}`} className="relative h-48 overflow-hidden block">
           <img
             src={course.image_url || 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800&q=80'}
             alt={course.title}
@@ -59,7 +59,7 @@ export default function CourseCard({ course, index = 0 }: CourseCardProps) {
 
         <div className="p-5 space-y-3">
           <p className="text-xs text-primary font-medium uppercase tracking-wide">{course.category}</p>
-          <Link to={`/curso/${course.id}`}>
+          <Link to={`/curso/${course.slug}`}>
             <h3 className="font-semibold text-card-foreground line-clamp-2 group-hover:text-primary transition-colors hover:underline cursor-pointer">
               {course.title}
             </h3>
@@ -75,7 +75,7 @@ export default function CourseCard({ course, index = 0 }: CourseCardProps) {
           </div>
 
           <div className="flex gap-2 mt-2">
-            <Link to={`/curso/${course.id}`} className="flex-1">
+            <Link to={`/curso/${course.slug}`} className="flex-1">
               <Button variant="outline" size="sm" className="w-full">
                 Ver Detalhes
               </Button>

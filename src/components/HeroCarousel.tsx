@@ -114,7 +114,7 @@ export default function HeroCarousel() {
               transition={{ delay: 0.5 }}
               className="flex flex-wrap gap-4"
             >
-              <Link to={`/curso/${currentCourse.id}`}>
+              <Link to={`/curso/${currentCourse.slug}`}>
                 <Button variant="hero" size="lg" className="group">
                   Saiba Mais
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
