@@ -147,8 +147,8 @@ export default function CursoDetalhe() {
                 <Card className="text-center h-full">
                   <CardContent className="pt-6 pb-4">
                     <MapPin className="w-8 h-8 text-primary mx-auto mb-2" />
-                    <p className="text-xs text-muted-foreground mb-1">Local</p>
-                    <p className="font-semibold text-sm">{course.location || 'Online'}</p>
+                    <p className="text-xs text-muted-foreground mb-1">Modalidade</p>
+                    <p className="font-semibold text-sm">{course.modality || 'Online'}</p>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -209,17 +209,6 @@ export default function CursoDetalhe() {
                 </motion.div>
               )}
 
-              {/* Pré-requisitos */}
-              {course.prerequisites && (
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
-                  <Card className="bg-muted/50">
-                    <CardContent className="p-6">
-                      <h3 className="font-semibold text-foreground mb-2">Pré-requisitos</h3>
-                      <p className="text-muted-foreground">{course.prerequisites}</p>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              )}
 
               {/* Certificado e CTA */}
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>

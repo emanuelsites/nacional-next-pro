@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Plus, Edit2, Trash2, Search, Sparkles, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -7,15 +8,13 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { fetchCourses, deleteCourse, Course } from '@/lib/api';
 import { supabase } from '@/integrations/supabase/client';
-import CourseFormModal from '@/components/admin/CourseFormModal';
 
 export default function AdminCursos() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingCourse, setEditingCourse] = useState<Course | null>(null);
   const [generatingImageId, setGeneratingImageId] = useState<string | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const { data: courses = [], isLoading } = useQuery({ queryKey: ['admin-courses'], queryFn: fetchCourses });
 
@@ -35,19 +34,13 @@ export default function AdminCursos() {
   );
 
   const handleEdit = (course: Course) => {
-    setEditingCourse(course);
-    setIsModalOpen(true);
+    navigate(`/admin/cursos/editar/${course.id}`);
   };
 
   const handleDelete = (id: string) => {
     if (confirm('Tem certeza que deseja excluir este curso?')) {
       deleteCourseMutation.mutate(id);
     }
-  };
-
-  const handleModalClose = () => {
-    setIsModalOpen(false);
-    setEditingCourse(null);
   };
 
   const handleGenerateImage = async (course: Course) => {
@@ -96,7 +89,7 @@ export default function AdminCursos() {
             className="pl-10"
           />
         </div>
-        <Button variant="hero" onClick={() => setIsModalOpen(true)}>
+        <Button variant="hero" onClick={() => navigate('/admin/cursos/novo')}>
           <Plus className="w-4 h-4 mr-2" />
           Novo Curso
         </Button>
@@ -177,12 +170,6 @@ export default function AdminCursos() {
           </div>
         )}
       </div>
-
-      <CourseFormModal 
-        isOpen={isModalOpen} 
-        onClose={handleModalClose} 
-        course={editingCourse} 
-      />
     </div>
   );
 }
