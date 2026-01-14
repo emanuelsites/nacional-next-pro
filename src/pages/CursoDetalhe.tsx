@@ -10,21 +10,21 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Clock, MapPin, User, Award, ArrowLeft, Calendar, BookOpen, Target, Printer, Share2 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { fetchCourseById, Course } from '@/lib/api';
+import { fetchCourseBySlug, Course } from '@/lib/api';
 
 export default function CursoDetalhe() {
-  const { id } = useParams();
+  const { slug } = useParams();
   const { data: course, isLoading } = useQuery<Course | null>({
-    queryKey: ['course', id],
-    queryFn: () => fetchCourseById(id!),
-    enabled: !!id,
+    queryKey: ['course', slug],
+    queryFn: () => fetchCourseBySlug(slug!),
+    enabled: !!slug,
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Scroll to top when component mounts or id changes
+  // Scroll to top when component mounts or slug changes
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [id]);
+  }, [slug]);
 
   const handlePrint = () => {
     window.print();

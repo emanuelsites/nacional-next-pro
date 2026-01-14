@@ -2,6 +2,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 export interface Course {
   id: string;
+  slug: string | null;
   title: string;
   short_description: string | null;
   full_description: string | null;
@@ -89,6 +90,17 @@ export async function fetchCourseById(id: string): Promise<Course | null> {
     .from('courses')
     .select('*')
     .eq('id', id)
+    .maybeSingle();
+  
+  if (error) throw error;
+  return data;
+}
+
+export async function fetchCourseBySlug(slug: string): Promise<Course | null> {
+  const { data, error } = await supabase
+    .from('courses')
+    .select('*')
+    .eq('slug', slug)
     .maybeSingle();
   
   if (error) throw error;
