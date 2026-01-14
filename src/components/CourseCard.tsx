@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Clock, Calendar } from 'lucide-react';
+import { Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Course } from '@/lib/api';
 import { Button } from '@/components/ui/button';
@@ -30,7 +30,7 @@ export default function CourseCard({ course, index = 0 }: CourseCardProps) {
             alt={course.title}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 to-transparent" />
           
           <div className="absolute top-4 left-4 flex gap-2">
             <Badge className={`${
@@ -47,13 +47,6 @@ export default function CourseCard({ course, index = 0 }: CourseCardProps) {
                 Destaque
               </Badge>
             )}
-          </div>
-          
-          <div className="absolute bottom-4 left-4 right-4">
-            <div className="flex items-center gap-2 text-background text-sm">
-              <Calendar className="w-4 h-4" />
-              <span>{course.course_date}</span>
-            </div>
           </div>
         </Link>
 

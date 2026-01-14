@@ -58,7 +58,16 @@ export default function AdminCourseForm() {
       try {
         const locationData = course.location;
         if (locationData && locationData.startsWith('[')) {
-          parsedLocationDates = JSON.parse(locationData);
+          const parsed = JSON.parse(locationData);
+          // Check if the data has the correct structure or if it's inverted
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            // The data might have 'location' containing dates and 'date' containing times
+            // We need to handle both cases
+            parsedLocationDates = parsed.map((item: any) => ({
+              location: item.location || '',
+              date: item.date || ''
+            }));
+          }
         } else if (locationData || course.course_date) {
           parsedLocationDates = [{
             location: course.location || '',
@@ -73,7 +82,7 @@ export default function AdminCourseForm() {
       }
 
       setFormData({
-        title: course.title || '',
+        title: course.title,
         short_description: course.short_description || '',
         full_description: course.full_description || '',
         content: course.content || '',
