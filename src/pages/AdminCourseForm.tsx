@@ -30,6 +30,8 @@ export default function AdminCourseForm() {
     enabled: isEditing,
   });
 
+  const [formInitialized, setFormInitialized] = useState(!isEditing);
+  
   const [formData, setFormData] = useState({
     title: '',
     short_description: '',
@@ -50,7 +52,9 @@ export default function AdminCourseForm() {
   ]);
 
   useEffect(() => {
-    if (course) {
+    if (course && !formInitialized) {
+      console.log('Loading course data:', course);
+      
       // Parse existing location and date data
       let parsedLocationDates: LocationDate[] = [{ location: '', date: '' }];
       
@@ -59,10 +63,7 @@ export default function AdminCourseForm() {
         const locationData = course.location;
         if (locationData && locationData.startsWith('[')) {
           const parsed = JSON.parse(locationData);
-          // Check if the data has the correct structure or if it's inverted
           if (Array.isArray(parsed) && parsed.length > 0) {
-            // The data might have 'location' containing dates and 'date' containing times
-            // We need to handle both cases
             parsedLocationDates = parsed.map((item: any) => ({
               location: item.location || '',
               date: item.date || ''
@@ -81,8 +82,8 @@ export default function AdminCourseForm() {
         }];
       }
 
-      setFormData({
-        title: course.title,
+      const newFormData = {
+        title: course.title || '',
         short_description: course.short_description || '',
         full_description: course.full_description || '',
         content: course.content || '',
@@ -94,11 +95,14 @@ export default function AdminCourseForm() {
         image_url: course.image_url || '',
         featured: course.featured ?? false,
         active: course.active ?? true,
-      });
+      };
       
+      console.log('Setting form data:', newFormData);
+      setFormData(newFormData);
       setLocationDates(parsedLocationDates.length > 0 ? parsedLocationDates : [{ location: '', date: '' }]);
+      setFormInitialized(true);
     }
-  }, [course]);
+  }, [course, formInitialized]);
 
   const createMutation = useMutation({
     mutationFn: createCourse,
@@ -168,7 +172,7 @@ export default function AdminCourseForm() {
 
   const isLoading = createMutation.isPending || updateMutation.isPending;
 
-  if (isEditing && isLoadingCourse) {
+  if (isEditing && (isLoadingCourse || !formInitialized)) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
