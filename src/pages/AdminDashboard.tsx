@@ -56,8 +56,8 @@ export default function AdminDashboard() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
                       {enrollment.nome_completo || enrollment.nome_empresa || '-'}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
-                      {enrollment.course_name}
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground max-w-[200px] truncate" title={enrollment.course_name}>
+                      {enrollment.course_name.length > 30 ? `${enrollment.course_name.substring(0, 30)}...` : enrollment.course_name}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                       {enrollment.email}
