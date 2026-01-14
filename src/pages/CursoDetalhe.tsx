@@ -124,13 +124,45 @@ export default function CursoDetalhe() {
         {/* Course Info Cards */}
         <section className="py-8 bg-muted/30">
           <div className="container mx-auto px-4">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-                <Card className="text-center h-full">
+                <Card className="h-full">
                   <CardContent className="pt-6 pb-4">
-                    <Calendar className="w-8 h-8 text-primary mx-auto mb-2" />
-                    <p className="text-xs text-muted-foreground mb-1">Data</p>
-                    <p className="font-semibold text-sm">{course.course_date || 'A informar'}</p>
+                    <div className="flex items-start gap-3">
+                      <Calendar className="w-8 h-8 text-primary flex-shrink-0" />
+                      <div>
+                        <p className="text-xs text-muted-foreground mb-1">Local e Data</p>
+                        <div className="space-y-2">
+                          {(() => {
+                            // Parse location data
+                            let locationDates: { location: string; date: string }[] = [];
+                            try {
+                              if (course.location && course.location.startsWith('[')) {
+                                locationDates = JSON.parse(course.location);
+                              } else {
+                                // For legacy single entry format
+                                locationDates = [{
+                                  location: course.location || '',
+                                  date: course.course_date || 'A informar'
+                                }];
+                              }
+                            } catch {
+                              locationDates = [{
+                                location: course.location || '',
+                                date: course.course_date || 'A informar'
+                              }];
+                            }
+                            
+                            return locationDates.map((item, index) => (
+                              <div key={index} className="text-sm">
+                                {item.location && <p className="font-semibold">{item.location}</p>}
+                                <p className="text-muted-foreground">{item.date || 'A informar'}</p>
+                              </div>
+                            ));
+                          })()}
+                        </div>
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -152,16 +184,22 @@ export default function CursoDetalhe() {
                   </CardContent>
                 </Card>
               </motion.div>
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
-                <Card className="text-center h-full">
-                  <CardContent className="pt-6 pb-4">
-                    <User className="w-8 h-8 text-primary mx-auto mb-2" />
-                    <p className="text-xs text-muted-foreground mb-1">Instrutor</p>
-                    <p className="font-semibold text-sm">{course.instructor || 'A informar'}</p>
-                  </CardContent>
-                </Card>
-              </motion.div>
             </div>
+            {/* Instrutor em linha separada */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }} 
+              animate={{ opacity: 1, y: 0 }} 
+              transition={{ delay: 0.25 }}
+              className="mt-4"
+            >
+              <Card className="text-center">
+                <CardContent className="pt-6 pb-4">
+                  <User className="w-8 h-8 text-primary mx-auto mb-2" />
+                  <p className="text-xs text-muted-foreground mb-1">Instrutor</p>
+                  <p className="font-semibold text-sm">{course.instructor || 'A informar'}</p>
+                </CardContent>
+              </Card>
+            </motion.div>
           </div>
         </section>
 
