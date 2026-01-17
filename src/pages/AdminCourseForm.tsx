@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, Plus, X } from 'lucide-react';
+import { ArrowLeft, Plus, X, Sparkles, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -11,6 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { createCourse, updateCourse, fetchCourseById, Course, categories } from '@/lib/api';
 import ImageUpload from '@/components/admin/ImageUpload';
 import RichTextEditor from '@/components/admin/RichTextEditor';
+import { supabase } from '@/integrations/supabase/client';
 
 interface LocationDate {
   location: string;
@@ -50,6 +51,40 @@ export default function AdminCourseForm() {
   const [locationDates, setLocationDates] = useState<LocationDate[]>([
     { location: '', date: '' }
   ]);
+
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+
+  const handleGenerateImage = async () => {
+    if (!formData.title) {
+      toast({ title: 'Por favor, preencha o título do curso primeiro', variant: 'destructive' });
+      return;
+    }
+
+    setIsGeneratingImage(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-course-image', {
+        body: {
+          courseTitle: formData.title,
+          courseCategory: formData.category,
+          courseId: id || 'temp-' + Date.now(),
+        },
+      });
+
+      if (error) throw error;
+
+      if (data?.imageUrl) {
+        setFormData({ ...formData, image_url: data.imageUrl });
+        toast({ title: 'Imagem gerada com sucesso!' });
+      } else {
+        throw new Error('Nenhuma imagem gerada');
+      }
+    } catch (error) {
+      console.error('Error generating image:', error);
+      toast({ title: 'Erro ao gerar imagem', variant: 'destructive' });
+    } finally {
+      setIsGeneratingImage(false);
+    }
+  };
 
   useEffect(() => {
     if (course && !formInitialized) {
@@ -206,11 +241,32 @@ export default function AdminCourseForm() {
 
         <div>
           <Label>Imagem do Curso</Label>
-          <ImageUpload 
-            value={formData.image_url} 
-            onChange={(url) => setFormData({ ...formData, image_url: url })} 
-            folder="courses"
-          />
+          <div className="flex items-start gap-4">
+            <ImageUpload 
+              value={formData.image_url} 
+              onChange={(url) => setFormData({ ...formData, image_url: url })} 
+              folder="courses"
+            />
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleGenerateImage}
+              disabled={isGeneratingImage}
+              className="flex items-center gap-2 h-32"
+            >
+              {isGeneratingImage ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Gerando...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-4 h-4" />
+                  Gerar com IA
+                </>
+              )}
+            </Button>
+          </div>
         </div>
 
         <div>

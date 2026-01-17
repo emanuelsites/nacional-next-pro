@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -16,6 +16,7 @@ export default function HeroCarousel() {
   // Use all courses for the carousel
   const carouselCourses = courses;
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
 
   // Reset index when courses change
   useEffect(() => {
@@ -24,16 +25,20 @@ export default function HeroCarousel() {
     }
   }, [carouselCourses.length, currentIndex]);
 
-  // Autoplay - advances every 5 seconds
+  // Autoplay - advances every 5 seconds, but pauses when editing
   useEffect(() => {
-    if (carouselCourses.length <= 1) return;
+    if (carouselCourses.length <= 1 || isPaused) return;
     
     const timer = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % carouselCourses.length);
     }, 5000);
     
     return () => clearInterval(timer);
-  }, [carouselCourses.length]);
+  }, [carouselCourses.length, isPaused]);
+
+  const handleEditingChange = useCallback((isEditing: boolean) => {
+    setIsPaused(isEditing);
+  }, []);
 
   const goToPrevious = () => {
     if (carouselCourses.length === 0) return;
@@ -101,6 +106,7 @@ export default function HeroCarousel() {
                 currentValue={currentCourse.title}
                 as="span"
                 className="text-2xl md:text-3xl lg:text-4xl font-bold leading-tight"
+                onEditingChange={handleEditingChange}
               />
             </motion.h1>
 
@@ -116,6 +122,7 @@ export default function HeroCarousel() {
                 currentValue={currentCourse.course_date || ''}
                 as="span"
                 className="text-sm"
+                onEditingChange={handleEditingChange}
               />
               <span>•</span>
               <EditableCourseField
@@ -124,6 +131,7 @@ export default function HeroCarousel() {
                 currentValue={currentCourse.duration || ''}
                 as="span"
                 className="text-sm"
+                onEditingChange={handleEditingChange}
               />
             </motion.div>
 
@@ -180,6 +188,12 @@ export default function HeroCarousel() {
             ))}
           </div>
         </>
+      )}
+
+      {isPaused && (
+        <div className="absolute top-4 right-4 bg-accent text-accent-foreground text-xs px-3 py-1.5 rounded-full z-20">
+          Autoplay pausado durante edição
+        </div>
       )}
     </section>
   );

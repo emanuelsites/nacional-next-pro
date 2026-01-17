@@ -1,17 +1,19 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useVisualEditor } from '@/contexts/VisualEditorContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 import { updateCourse } from '@/lib/api';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import { Check, X } from 'lucide-react';
 
 interface EditableCourseFieldProps {
   courseId: string;
-  field: 'title' | 'short_description' | 'course_date' | 'duration' | 'location';
+  field: 'title' | 'short_description' | 'course_date' | 'duration' | 'location' | 'category';
   currentValue: string;
   as?: 'h1' | 'h2' | 'h3' | 'h4' | 'p' | 'span' | 'div';
   className?: string;
+  onEditingChange?: (isEditing: boolean) => void;
 }
 
 export default function EditableCourseField({
@@ -19,7 +21,8 @@ export default function EditableCourseField({
   field,
   currentValue,
   as: Component = 'span',
-  className
+  className,
+  onEditingChange
 }: EditableCourseFieldProps) {
   const { isEditing } = useVisualEditor();
   const { isAdmin } = useAuth();
@@ -31,6 +34,11 @@ export default function EditableCourseField({
   const originalValue = useRef(currentValue);
 
   const canEdit = isEditing && isAdmin;
+
+  // Notify parent when editing state changes
+  useEffect(() => {
+    onEditingChange?.(isFocused);
+  }, [isFocused, onEditingChange]);
 
   const handleSave = async () => {
     if (!contentRef.current) return;
@@ -64,6 +72,17 @@ export default function EditableCourseField({
     }
   };
 
+  const handleCancel = () => {
+    if (contentRef.current) {
+      contentRef.current.innerText = originalValue.current;
+    }
+    contentRef.current?.blur();
+  };
+
+  const handleConfirm = () => {
+    contentRef.current?.blur();
+  };
+
   if (!canEdit) {
     return (
       <Component className={className}>
@@ -93,9 +112,12 @@ export default function EditableCourseField({
           originalValue.current = contentRef.current?.innerText || currentValue;
         }}
         onBlur={() => {
-          setIsFocused(false);
-          setIsHovered(false);
-          handleSave();
+          // Small delay to allow button clicks to register
+          setTimeout(() => {
+            setIsFocused(false);
+            setIsHovered(false);
+            handleSave();
+          }, 150);
         }}
         onKeyDown={(e: React.KeyboardEvent) => {
           if (e.key === 'Enter') {
@@ -120,8 +142,29 @@ export default function EditableCourseField({
       )}
       
       {isFocused && (
-        <div className="absolute -top-6 left-0 bg-accent text-accent-foreground text-xs px-2 py-1 rounded whitespace-nowrap z-50">
-          Enter para salvar, Esc para cancelar
+        <div className="absolute -top-8 left-0 flex items-center gap-1 z-50">
+          <button
+            type="button"
+            onMouseDown={(e) => {
+              e.preventDefault();
+              handleConfirm();
+            }}
+            className="bg-green-500 hover:bg-green-600 text-white p-1.5 rounded-full transition-colors"
+            title="Salvar"
+          >
+            <Check className="w-3 h-3" />
+          </button>
+          <button
+            type="button"
+            onMouseDown={(e) => {
+              e.preventDefault();
+              handleCancel();
+            }}
+            className="bg-red-500 hover:bg-red-600 text-white p-1.5 rounded-full transition-colors"
+            title="Cancelar"
+          >
+            <X className="w-3 h-3" />
+          </button>
         </div>
       )}
     </div>

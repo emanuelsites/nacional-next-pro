@@ -6,6 +6,9 @@ import { Course } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import EnrollmentModal from './EnrollmentModal';
+import EditableCourseField from './visual-editor/EditableCourseField';
+import { useVisualEditor } from '@/contexts/VisualEditorContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface CourseCardProps {
   course: Course;
@@ -14,6 +17,9 @@ interface CourseCardProps {
 
 export default function CourseCard({ course, index = 0 }: CourseCardProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { isEditing } = useVisualEditor();
+  const { isAdmin } = useAuth();
+  const canEdit = isEditing && isAdmin;
 
   return (
     <>
@@ -51,17 +57,50 @@ export default function CourseCard({ course, index = 0 }: CourseCardProps) {
         </Link>
 
         <div className="p-5 space-y-3">
-          <p className="text-xs text-primary font-medium uppercase tracking-wide">{course.category}</p>
-          <Link to={`/curso/${course.slug}`}>
-            <h3 className="font-semibold text-card-foreground line-clamp-2 group-hover:text-primary transition-colors hover:underline cursor-pointer">
-              {course.title}
-            </h3>
-          </Link>
+          <p className="text-xs text-primary font-medium uppercase tracking-wide">
+            {canEdit ? (
+              <EditableCourseField
+                courseId={course.id}
+                field="category"
+                currentValue={course.category}
+                as="span"
+                className="text-xs text-primary font-medium uppercase tracking-wide"
+              />
+            ) : (
+              course.category
+            )}
+          </p>
+          
+          {canEdit ? (
+            <EditableCourseField
+              courseId={course.id}
+              field="title"
+              currentValue={course.title}
+              as="h3"
+              className="font-semibold text-card-foreground line-clamp-2"
+            />
+          ) : (
+            <Link to={`/curso/${course.slug}`}>
+              <h3 className="font-semibold text-card-foreground line-clamp-2 group-hover:text-primary transition-colors hover:underline cursor-pointer">
+                {course.title}
+              </h3>
+            </Link>
+          )}
 
           <div className="flex items-center gap-3 text-xs text-muted-foreground pt-2">
             <div className="flex items-center gap-1">
               <Clock className="w-3.5 h-3.5" />
-              <span>{course.duration}</span>
+              {canEdit ? (
+                <EditableCourseField
+                  courseId={course.id}
+                  field="duration"
+                  currentValue={course.duration || ''}
+                  as="span"
+                  className="text-xs"
+                />
+              ) : (
+                <span>{course.duration}</span>
+              )}
             </div>
             <span>•</span>
             <span>{course.modality}</span>

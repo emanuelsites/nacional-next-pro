@@ -40,9 +40,9 @@ export default function AdminLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-muted flex">
+    <div className="min-h-screen bg-muted flex pt-[var(--admin-bar-height,0px)]">
       {/* Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-card border-r border-border transform transition-transform duration-300 lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <aside className={`fixed top-[var(--admin-bar-height,0px)] bottom-0 left-0 z-50 w-64 bg-card border-r border-border transform transition-transform duration-300 lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="flex flex-col h-full">
           <div className="p-4 border-b border-border">
             <img src={logo} alt="Nacional Treinamentos" className="h-8" />
