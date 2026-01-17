@@ -5,6 +5,9 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import WhatsAppButton from '@/components/WhatsAppButton';
 import EnrollmentModal from '@/components/EnrollmentModal';
+import EditableCourseField from '@/components/visual-editor/EditableCourseField';
+import EditableCourseRichText from '@/components/visual-editor/EditableCourseRichText';
+import EditableCourseImage from '@/components/visual-editor/EditableCourseImage';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
@@ -65,10 +68,11 @@ export default function CursoDetalhe() {
       <main>
         {/* Hero Section */}
         <section className="relative h-[45vh] min-h-[350px]">
-          <img 
-            src={course.image_url || 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1920&q=80'} 
-            alt={course.title} 
-            className="w-full h-full object-cover" 
+          <EditableCourseImage
+            courseId={course.id}
+            currentImageUrl={course.image_url || 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1920&q=80'}
+            alt={course.title}
+            className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-foreground via-foreground/70 to-foreground/30" />
           
@@ -110,11 +114,33 @@ export default function CursoDetalhe() {
               </Link>
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                 <div className="flex flex-wrap gap-2 mb-3">
-                  <Badge className="bg-primary text-primary-foreground">{course.modality}</Badge>
-                  <Badge variant="outline" className="border-background/30 text-background">{course.category}</Badge>
+                  <Badge className="bg-primary text-primary-foreground">
+                    <EditableCourseField
+                      courseId={course.id}
+                      field="modality"
+                      currentValue={course.modality || 'Online'}
+                      as="span"
+                      className="text-xs"
+                    />
+                  </Badge>
+                  <Badge variant="outline" className="border-background/30 text-background">
+                    <EditableCourseField
+                      courseId={course.id}
+                      field="category"
+                      currentValue={course.category}
+                      as="span"
+                      className="text-xs"
+                    />
+                  </Badge>
                 </div>
                 <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-background max-w-4xl leading-tight">
-                  {course.title}
+                  <EditableCourseField
+                    courseId={course.id}
+                    field="title"
+                    currentValue={course.title}
+                    as="span"
+                    className="text-2xl md:text-3xl lg:text-4xl font-bold leading-tight"
+                  />
                 </h1>
               </motion.div>
             </div>
@@ -133,33 +159,26 @@ export default function CursoDetalhe() {
                       <div>
                         <p className="text-xs text-muted-foreground mb-1">Local e Data</p>
                         <div className="space-y-2">
-                          {(() => {
-                            // Parse location data
-                            let locationDates: { location: string; date: string }[] = [];
-                            try {
-                              if (course.location && course.location.startsWith('[')) {
-                                locationDates = JSON.parse(course.location);
-                              } else {
-                                // For legacy single entry format
-                                locationDates = [{
-                                  location: course.location || '',
-                                  date: course.course_date || 'A informar'
-                                }];
-                              }
-                            } catch {
-                              locationDates = [{
-                                location: course.location || '',
-                                date: course.course_date || 'A informar'
-                              }];
-                            }
-                            
-                            return locationDates.map((item, index) => (
-                              <div key={index} className="text-sm">
-                                {item.location && <p className="font-semibold">{item.location}</p>}
-                                <p className="text-muted-foreground">{item.date || 'A informar'}</p>
-                              </div>
-                            ));
-                          })()}
+                          <div className="text-sm">
+                            <p className="font-semibold">
+                              <EditableCourseField
+                                courseId={course.id}
+                                field="location"
+                                currentValue={course.location || 'Online'}
+                                as="span"
+                                className="font-semibold"
+                              />
+                            </p>
+                            <p className="text-muted-foreground">
+                              <EditableCourseField
+                                courseId={course.id}
+                                field="course_date"
+                                currentValue={course.course_date || 'A informar'}
+                                as="span"
+                                className="text-muted-foreground"
+                              />
+                            </p>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -171,7 +190,15 @@ export default function CursoDetalhe() {
                   <CardContent className="pt-6 pb-4">
                     <Clock className="w-8 h-8 text-primary mx-auto mb-2" />
                     <p className="text-xs text-muted-foreground mb-1">Carga Horária</p>
-                    <p className="font-semibold text-sm">{course.duration || 'A informar'}</p>
+                    <p className="font-semibold text-sm">
+                      <EditableCourseField
+                        courseId={course.id}
+                        field="duration"
+                        currentValue={course.duration || 'A informar'}
+                        as="span"
+                        className="font-semibold"
+                      />
+                    </p>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -180,7 +207,15 @@ export default function CursoDetalhe() {
                   <CardContent className="pt-6 pb-4">
                     <MapPin className="w-8 h-8 text-primary mx-auto mb-2" />
                     <p className="text-xs text-muted-foreground mb-1">Modalidade</p>
-                    <p className="font-semibold text-sm">{course.modality || 'Online'}</p>
+                    <p className="font-semibold text-sm">
+                      <EditableCourseField
+                        courseId={course.id}
+                        field="modality"
+                        currentValue={course.modality || 'Online'}
+                        as="span"
+                        className="font-semibold"
+                      />
+                    </p>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -196,7 +231,15 @@ export default function CursoDetalhe() {
                 <CardContent className="pt-6 pb-4">
                   <User className="w-8 h-8 text-primary mx-auto mb-2" />
                   <p className="text-xs text-muted-foreground mb-1">Instrutor</p>
-                  <p className="font-semibold text-sm">{course.instructor || 'A informar'}</p>
+                  <p className="font-semibold text-sm">
+                    <EditableCourseField
+                      courseId={course.id}
+                      field="instructor"
+                      currentValue={course.instructor || 'A informar'}
+                      as="span"
+                      className="font-semibold"
+                    />
+                  </p>
                 </CardContent>
               </Card>
             </motion.div>
@@ -208,45 +251,44 @@ export default function CursoDetalhe() {
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto space-y-10">
               {/* Sobre o Curso */}
-              {course.full_description && (
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                      <Target className="w-5 h-5 text-primary" />
-                    </div>
-                    <h2 className="text-2xl font-bold text-foreground">Sobre o Curso</h2>
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <Target className="w-5 h-5 text-primary" />
                   </div>
-                  <Card>
-                    <CardContent className="p-6">
-                      <div 
-                        className="course-content max-w-none text-muted-foreground"
-                        dangerouslySetInnerHTML={{ __html: course.full_description }}
-                      />
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              )}
+                  <h2 className="text-2xl font-bold text-foreground">Sobre o Curso</h2>
+                </div>
+                <Card>
+                  <CardContent className="p-6">
+                    <EditableCourseRichText
+                      courseId={course.id}
+                      field="full_description"
+                      currentValue={course.full_description || '<p>Descrição do curso não disponível.</p>'}
+                      className="course-content max-w-none text-muted-foreground"
+                    />
+                  </CardContent>
+                </Card>
+              </motion.div>
 
               {/* Conteúdo Programático */}
-              {course.content && (
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                      <BookOpen className="w-5 h-5 text-primary" />
-                    </div>
-                    <h2 className="text-2xl font-bold text-foreground">Conteúdo Programático</h2>
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <BookOpen className="w-5 h-5 text-primary" />
                   </div>
-                  <Card>
-                    <CardContent className="p-6">
-                      <div 
-                        className="course-content max-w-none text-muted-foreground"
-                        dangerouslySetInnerHTML={{ __html: course.content }}
-                      />
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              )}
-
+                  <h2 className="text-2xl font-bold text-foreground">Conteúdo Programático</h2>
+                </div>
+                <Card>
+                  <CardContent className="p-6">
+                    <EditableCourseRichText
+                      courseId={course.id}
+                      field="content"
+                      currentValue={course.content || '<p>Conteúdo programático não disponível.</p>'}
+                      className="course-content max-w-none text-muted-foreground"
+                    />
+                  </CardContent>
+                </Card>
+              </motion.div>
 
               {/* Certificado e CTA */}
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
