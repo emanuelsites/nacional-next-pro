@@ -6,6 +6,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { Check, X, Edit3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import FormattingToolbar from './FormattingToolbar';
 
 interface EditableCourseRichTextProps {
   courseId: string;
@@ -44,6 +45,11 @@ export default function EditableCourseRichText({
         contentRef.current.focus();
       }
     }, 0);
+  };
+
+  const handleFormat = (command: string, value?: string) => {
+    document.execCommand(command, false, value);
+    contentRef.current?.focus();
   };
 
   const handleSave = async () => {
@@ -98,6 +104,37 @@ export default function EditableCourseRichText({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
+      {/* Formatting toolbar when editing */}
+      {isLocalEditing && (
+        <div className="sticky top-0 z-20 mb-3">
+          <div className="flex items-center justify-between gap-2 flex-wrap">
+            <FormattingToolbar onFormat={handleFormat} />
+            <div className="flex gap-1">
+              <Button
+                size="sm"
+                variant="default"
+                className="h-8 px-3 bg-green-600 hover:bg-green-700"
+                onMouseDown={(e) => { e.preventDefault(); handleSave(); }}
+                disabled={isSaving}
+              >
+                <Check className="w-4 h-4 mr-1" />
+                {isSaving ? 'Salvando...' : 'Salvar'}
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-8 px-3"
+                onMouseDown={(e) => { e.preventDefault(); handleCancel(); }}
+                disabled={isSaving}
+              >
+                <X className="w-4 h-4 mr-1" />
+                Cancelar
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Edit button overlay */}
       {!isLocalEditing && isHovered && (
         <div className="absolute -top-2 -right-2 z-10">
@@ -108,32 +145,6 @@ export default function EditableCourseRichText({
             onClick={handleStartEdit}
           >
             <Edit3 className="w-4 h-4" />
-          </Button>
-        </div>
-      )}
-
-      {/* Save/Cancel buttons when editing */}
-      {isLocalEditing && (
-        <div className="absolute -top-3 right-0 z-20 flex gap-1">
-          <Button
-            size="sm"
-            variant="default"
-            className="h-8 px-3 bg-green-600 hover:bg-green-700"
-            onClick={handleSave}
-            disabled={isSaving}
-          >
-            <Check className="w-4 h-4 mr-1" />
-            {isSaving ? 'Salvando...' : 'Salvar'}
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            className="h-8 px-3"
-            onClick={handleCancel}
-            disabled={isSaving}
-          >
-            <X className="w-4 h-4 mr-1" />
-            Cancelar
           </Button>
         </div>
       )}
