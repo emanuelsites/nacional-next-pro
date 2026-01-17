@@ -48,7 +48,7 @@ export default function FormattingToolbar({ onFormat, className }: FormattingToo
       <Button
         size="icon"
         variant="ghost"
-        className="h-8 w-8"
+        className="h-8 w-8 text-foreground hover:text-foreground"
         onMouseDown={(e) => { e.preventDefault(); handleFormat('bold'); }}
         title="Negrito"
       >
@@ -59,7 +59,7 @@ export default function FormattingToolbar({ onFormat, className }: FormattingToo
       <Button
         size="icon"
         variant="ghost"
-        className="h-8 w-8"
+        className="h-8 w-8 text-foreground hover:text-foreground"
         onMouseDown={(e) => { e.preventDefault(); handleFormat('italic'); }}
         title="Itálico"
       >
@@ -70,7 +70,7 @@ export default function FormattingToolbar({ onFormat, className }: FormattingToo
       <Button
         size="icon"
         variant="ghost"
-        className="h-8 w-8"
+        className="h-8 w-8 text-foreground hover:text-foreground"
         onMouseDown={(e) => { e.preventDefault(); handleFormat('underline'); }}
         title="Sublinhado"
       >
@@ -85,7 +85,7 @@ export default function FormattingToolbar({ onFormat, className }: FormattingToo
           <Button 
             size="sm" 
             variant="ghost" 
-            className="h-8 px-2 gap-1"
+            className="h-8 px-2 gap-1 text-foreground hover:text-foreground"
             onMouseDown={(e) => e.preventDefault()}
           >
             <Type className="h-4 w-4" />
@@ -97,7 +97,7 @@ export default function FormattingToolbar({ onFormat, className }: FormattingToo
             {fontSizes.map((size) => (
               <button
                 key={size.value}
-                className="text-left px-3 py-1.5 hover:bg-muted rounded text-sm transition-colors"
+                className="text-left px-3 py-1.5 hover:bg-muted rounded text-sm transition-colors text-foreground"
                 onMouseDown={(e) => {
                   e.preventDefault();
                   handleFormat('fontSize', size.value);
@@ -116,7 +116,7 @@ export default function FormattingToolbar({ onFormat, className }: FormattingToo
       <Button
         size="icon"
         variant="ghost"
-        className="h-8 w-8"
+        className="h-8 w-8 text-foreground hover:text-foreground"
         onMouseDown={(e) => { e.preventDefault(); handleFormat('justifyLeft'); }}
         title="Alinhar à esquerda"
       >
@@ -125,7 +125,7 @@ export default function FormattingToolbar({ onFormat, className }: FormattingToo
       <Button
         size="icon"
         variant="ghost"
-        className="h-8 w-8"
+        className="h-8 w-8 text-foreground hover:text-foreground"
         onMouseDown={(e) => { e.preventDefault(); handleFormat('justifyCenter'); }}
         title="Centralizar"
       >
@@ -134,7 +134,7 @@ export default function FormattingToolbar({ onFormat, className }: FormattingToo
       <Button
         size="icon"
         variant="ghost"
-        className="h-8 w-8"
+        className="h-8 w-8 text-foreground hover:text-foreground"
         onMouseDown={(e) => { e.preventDefault(); handleFormat('justifyRight'); }}
         title="Alinhar à direita"
       >
@@ -149,7 +149,7 @@ export default function FormattingToolbar({ onFormat, className }: FormattingToo
           <Button 
             size="icon" 
             variant="ghost" 
-            className="h-8 w-8"
+            className="h-8 w-8 text-foreground hover:text-foreground"
             onMouseDown={(e) => e.preventDefault()}
             title="Cor do texto"
           >
