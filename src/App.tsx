@@ -17,7 +17,6 @@ import AdminDashboard from "./pages/AdminDashboard";
 import AdminCursos from "./pages/AdminCursos";
 import AdminCourseForm from "./pages/AdminCourseForm";
 import AdminInscritos from "./pages/AdminInscritos";
-import AdminBanners from "./pages/AdminBanners";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -44,7 +43,6 @@ const App = () => (
                 <Route path="cursos/novo" element={<AdminCourseForm />} />
                 <Route path="cursos/editar/:id" element={<AdminCourseForm />} />
                 <Route path="inscritos" element={<AdminInscritos />} />
-                <Route path="banners" element={<AdminBanners />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>
