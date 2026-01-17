@@ -3,14 +3,13 @@ import { Link, useNavigate, Outlet, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { LayoutDashboard, BookOpen, Users, Image, LogOut, Menu, X } from 'lucide-react';
+import { LayoutDashboard, BookOpen, Users, LogOut, Menu, X } from 'lucide-react';
 import logo from '@/assets/logo.png';
 
 const menuItems = [
   { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
   { name: 'Cursos', href: '/admin/cursos', icon: BookOpen },
   { name: 'Inscritos', href: '/admin/inscritos', icon: Users },
-  { name: 'Banners', href: '/admin/banners', icon: Image },
 ];
 
 export default function AdminLayout() {

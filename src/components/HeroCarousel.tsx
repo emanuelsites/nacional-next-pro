@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { fetchActiveCourses, Course } from '@/lib/api';
+import EditableCourseField from '@/components/visual-editor/EditableCourseField';
 
 export default function HeroCarousel() {
   const { data: courses = [], isLoading } = useQuery<Course[]>({ 
@@ -94,7 +95,13 @@ export default function HeroCarousel() {
               transition={{ delay: 0.3 }}
               className="text-2xl md:text-3xl lg:text-4xl font-bold leading-tight mb-4 line-clamp-3"
             >
-              {currentCourse.title}
+              <EditableCourseField
+                courseId={currentCourse.id}
+                field="title"
+                currentValue={currentCourse.title}
+                as="span"
+                className="text-2xl md:text-3xl lg:text-4xl font-bold leading-tight"
+              />
             </motion.h1>
 
             <motion.div
@@ -103,9 +110,21 @@ export default function HeroCarousel() {
               transition={{ delay: 0.4 }}
               className="flex flex-wrap gap-4 mb-6 text-sm text-background/80"
             >
-              <span>{currentCourse.course_date}</span>
+              <EditableCourseField
+                courseId={currentCourse.id}
+                field="course_date"
+                currentValue={currentCourse.course_date || ''}
+                as="span"
+                className="text-sm"
+              />
               <span>•</span>
-              <span>{currentCourse.duration}</span>
+              <EditableCourseField
+                courseId={currentCourse.id}
+                field="duration"
+                currentValue={currentCourse.duration || ''}
+                as="span"
+                className="text-sm"
+              />
             </motion.div>
 
             <motion.div
