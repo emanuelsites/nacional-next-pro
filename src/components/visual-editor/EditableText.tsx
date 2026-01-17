@@ -1,9 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useVisualEditor } from '@/contexts/VisualEditorContext';
 import { cn } from '@/lib/utils';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Button } from '@/components/ui/button';
-import { Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight, Type, Palette } from 'lucide-react';
+import FormattingToolbar from './FormattingToolbar';
 
 interface EditableTextProps {
   contentKey: string;
@@ -15,40 +13,21 @@ interface EditableTextProps {
   children?: React.ReactNode;
 }
 
-const colors = [
-  '#000000', '#ffffff', '#ef4444', '#f97316', '#eab308', 
-  '#22c55e', '#06b6d4', '#3b82f6', '#8b5cf6', '#ec4899'
-];
-
 export default function EditableText({
   contentKey,
   defaultValue,
   as: Component = 'p',
   className,
   page = 'global',
-  allowFormatting = false,
+  allowFormatting = true,
   children
 }: EditableTextProps) {
   const { isEditing, getContent, updateContent } = useVisualEditor();
   const [isHovered, setIsHovered] = useState(false);
   const [showToolbar, setShowToolbar] = useState(false);
-  const [textColor, setTextColor] = useState('#000000');
-  const [isBold, setIsBold] = useState(false);
-  const [isItalic, setIsItalic] = useState(false);
-  const [isUnderline, setIsUnderline] = useState(false);
-  const [textAlign, setTextAlign] = useState<'left' | 'center' | 'right'>('left');
   const contentRef = useRef<HTMLElement>(null);
 
   const content = getContent(contentKey, defaultValue);
-  const displayContent = children || content;
-
-  useEffect(() => {
-    // Parse existing styles when editing starts
-    if (isEditing && contentRef.current) {
-      const computedStyle = window.getComputedStyle(contentRef.current);
-      setTextColor(computedStyle.color);
-    }
-  }, [isEditing]);
 
   const handleInput = () => {
     if (contentRef.current) {
@@ -56,14 +35,10 @@ export default function EditableText({
     }
   };
 
-  const applyStyle = (command: string, value?: string) => {
+  const handleFormat = (command: string, value?: string) => {
     document.execCommand(command, false, value);
     handleInput();
-  };
-
-  const handleColorChange = (color: string) => {
-    setTextColor(color);
-    applyStyle('foreColor', color);
+    contentRef.current?.focus();
   };
 
   if (!isEditing) {
@@ -81,84 +56,9 @@ export default function EditableText({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => !showToolbar && setIsHovered(false)}
     >
-      {showToolbar && (
-        <div className="absolute -top-12 left-0 z-50 bg-background border border-border rounded-lg shadow-lg p-1 flex items-center gap-1">
-          <Button
-            size="icon"
-            variant={isBold ? 'default' : 'ghost'}
-            className="h-8 w-8"
-            onClick={() => { setIsBold(!isBold); applyStyle('bold'); }}
-          >
-            <Bold className="h-4 w-4" />
-          </Button>
-          <Button
-            size="icon"
-            variant={isItalic ? 'default' : 'ghost'}
-            className="h-8 w-8"
-            onClick={() => { setIsItalic(!isItalic); applyStyle('italic'); }}
-          >
-            <Italic className="h-4 w-4" />
-          </Button>
-          <Button
-            size="icon"
-            variant={isUnderline ? 'default' : 'ghost'}
-            className="h-8 w-8"
-            onClick={() => { setIsUnderline(!isUnderline); applyStyle('underline'); }}
-          >
-            <Underline className="h-4 w-4" />
-          </Button>
-          
-          <div className="w-px h-6 bg-border mx-1" />
-          
-          <Button
-            size="icon"
-            variant={textAlign === 'left' ? 'default' : 'ghost'}
-            className="h-8 w-8"
-            onClick={() => { setTextAlign('left'); applyStyle('justifyLeft'); }}
-          >
-            <AlignLeft className="h-4 w-4" />
-          </Button>
-          <Button
-            size="icon"
-            variant={textAlign === 'center' ? 'default' : 'ghost'}
-            className="h-8 w-8"
-            onClick={() => { setTextAlign('center'); applyStyle('justifyCenter'); }}
-          >
-            <AlignCenter className="h-4 w-4" />
-          </Button>
-          <Button
-            size="icon"
-            variant={textAlign === 'right' ? 'default' : 'ghost'}
-            className="h-8 w-8"
-            onClick={() => { setTextAlign('right'); applyStyle('justifyRight'); }}
-          >
-            <AlignRight className="h-4 w-4" />
-          </Button>
-
-          <div className="w-px h-6 bg-border mx-1" />
-
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button size="icon" variant="ghost" className="h-8 w-8">
-                <Palette className="h-4 w-4" style={{ color: textColor }} />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-2">
-              <div className="grid grid-cols-5 gap-1">
-                {colors.map(color => (
-                  <button
-                    key={color}
-                    className={cn(
-                      "w-6 h-6 rounded border-2",
-                      textColor === color ? "border-primary" : "border-transparent"
-                    )}
-                    style={{ backgroundColor: color }}
-                    onClick={() => handleColorChange(color)}
-                  />
-                ))}
-              </div>
-            </PopoverContent>
-          </Popover>
+      {showToolbar && allowFormatting && (
+        <div className="absolute -top-14 left-0 z-50">
+          <FormattingToolbar onFormat={handleFormat} />
         </div>
       )}
 
@@ -166,8 +66,8 @@ export default function EditableText({
         ref={contentRef as any}
         className={cn(
           className,
-          "transition-all duration-200",
-          isHovered && "ring-2 ring-primary ring-offset-2 cursor-text"
+          "transition-all duration-200 outline-none",
+          isHovered && "ring-2 ring-primary ring-offset-2 cursor-text rounded"
         )}
         contentEditable
         suppressContentEditableWarning

@@ -6,6 +6,7 @@ import { updateCourse } from '@/lib/api';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { Check, X } from 'lucide-react';
+import FormattingToolbar from './FormattingToolbar';
 
 interface EditableCourseFieldProps {
   courseId: string;
@@ -40,10 +41,15 @@ export default function EditableCourseField({
     onEditingChange?.(isFocused);
   }, [isFocused, onEditingChange]);
 
+  const handleFormat = (command: string, value?: string) => {
+    document.execCommand(command, false, value);
+    contentRef.current?.focus();
+  };
+
   const handleSave = async () => {
     if (!contentRef.current) return;
     
-    const newValue = contentRef.current.innerText.trim();
+    const newValue = contentRef.current.innerHTML.trim();
     
     if (newValue === originalValue.current) {
       return;
@@ -65,7 +71,7 @@ export default function EditableCourseField({
       toast.error('Erro ao atualizar curso');
       // Revert to original value
       if (contentRef.current) {
-        contentRef.current.innerText = originalValue.current;
+        contentRef.current.innerHTML = originalValue.current;
       }
     } finally {
       setIsSaving(false);
@@ -74,7 +80,7 @@ export default function EditableCourseField({
 
   const handleCancel = () => {
     if (contentRef.current) {
-      contentRef.current.innerText = originalValue.current;
+      contentRef.current.innerHTML = originalValue.current;
     }
     contentRef.current?.blur();
   };
@@ -85,9 +91,10 @@ export default function EditableCourseField({
 
   if (!canEdit) {
     return (
-      <Component className={className}>
-        {currentValue}
-      </Component>
+      <Component 
+        className={className}
+        dangerouslySetInnerHTML={{ __html: currentValue }}
+      />
     );
   }
 
@@ -97,6 +104,13 @@ export default function EditableCourseField({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => !isFocused && setIsHovered(false)}
     >
+      {/* Formatting toolbar when focused */}
+      {isFocused && (
+        <div className="absolute -top-14 left-0 z-50">
+          <FormattingToolbar onFormat={handleFormat} />
+        </div>
+      )}
+
       <Component
         ref={contentRef as any}
         className={cn(
@@ -109,7 +123,7 @@ export default function EditableCourseField({
         suppressContentEditableWarning
         onFocus={() => {
           setIsFocused(true);
-          originalValue.current = contentRef.current?.innerText || currentValue;
+          originalValue.current = contentRef.current?.innerHTML || currentValue;
         }}
         onBlur={() => {
           // Small delay to allow button clicks to register
@@ -117,23 +131,22 @@ export default function EditableCourseField({
             setIsFocused(false);
             setIsHovered(false);
             handleSave();
-          }, 150);
+          }, 200);
         }}
         onKeyDown={(e: React.KeyboardEvent) => {
-          if (e.key === 'Enter') {
+          if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
             (e.target as HTMLElement).blur();
           }
           if (e.key === 'Escape') {
             if (contentRef.current) {
-              contentRef.current.innerText = originalValue.current;
+              contentRef.current.innerHTML = originalValue.current;
             }
             (e.target as HTMLElement).blur();
           }
         }}
-      >
-        {currentValue}
-      </Component>
+        dangerouslySetInnerHTML={{ __html: currentValue }}
+      />
 
       {isHovered && !isFocused && (
         <div className="absolute -top-6 left-0 bg-primary text-primary-foreground text-xs px-2 py-1 rounded whitespace-nowrap z-50">
@@ -142,7 +155,7 @@ export default function EditableCourseField({
       )}
       
       {isFocused && (
-        <div className="absolute -top-8 left-0 flex items-center gap-1 z-50">
+        <div className="absolute -top-14 right-0 flex items-center gap-1 z-50">
           <button
             type="button"
             onMouseDown={(e) => {
