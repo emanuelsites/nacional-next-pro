@@ -9,7 +9,7 @@ import { Check, X } from 'lucide-react';
 
 interface EditableCourseFieldProps {
   courseId: string;
-  field: 'title' | 'short_description' | 'course_date' | 'duration' | 'location' | 'category';
+  field: 'title' | 'short_description' | 'course_date' | 'duration' | 'location' | 'category' | 'modality' | 'instructor';
   currentValue: string;
   as?: 'h1' | 'h2' | 'h3' | 'h4' | 'p' | 'span' | 'div';
   className?: string;
