@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -6,6 +6,43 @@ import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { fetchActiveCourses, Course } from '@/lib/api';
 import EditableCourseField from '@/components/visual-editor/EditableCourseField';
+
+interface LocationDate {
+  location: string;
+  date: string;
+}
+
+// Parse location/date JSON and return formatted string for display
+function formatLocationDateForDisplay(location: string | null, courseDate: string | null): string {
+  if (!location) {
+    return courseDate || 'A informar';
+  }
+  
+  try {
+    const parsed = JSON.parse(location);
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      // Return first location/date pair formatted nicely
+      const first = parsed[0] as LocationDate;
+      const parts: string[] = [];
+      if (first.location) parts.push(first.location);
+      if (first.date) parts.push(first.date);
+      
+      // If there are more locations, indicate that
+      if (parsed.length > 1) {
+        return `${parts.join(' • ')} (+${parsed.length - 1} turma${parsed.length > 2 ? 's' : ''})`;
+      }
+      return parts.join(' • ');
+    }
+  } catch {
+    // Not JSON, return as-is
+  }
+  
+  // Simple format: combine location and date
+  const parts: string[] = [];
+  if (location) parts.push(location);
+  if (courseDate) parts.push(courseDate);
+  return parts.join(' • ') || 'A informar';
+}
 
 export default function HeroCarousel() {
   const { data: courses = [], isLoading } = useQuery<Course[]>({ 
@@ -62,6 +99,7 @@ export default function HeroCarousel() {
   }
 
   const currentCourse = carouselCourses[currentIndex];
+  const formattedLocationDate = formatLocationDateForDisplay(currentCourse.location, currentCourse.course_date);
 
   return (
     <section className="relative h-[80vh] min-h-[600px] overflow-hidden">
@@ -116,14 +154,7 @@ export default function HeroCarousel() {
               transition={{ delay: 0.4 }}
               className="flex flex-wrap gap-4 mb-6 text-sm text-background/80"
             >
-              <EditableCourseField
-                courseId={currentCourse.id}
-                field="course_date"
-                currentValue={currentCourse.course_date || ''}
-                as="span"
-                className="text-sm"
-                onEditingChange={handleEditingChange}
-              />
+              <span className="text-sm">{formattedLocationDate}</span>
               <span>•</span>
               <EditableCourseField
                 courseId={currentCourse.id}
