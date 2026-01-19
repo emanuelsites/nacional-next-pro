@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import Header from '@/components/Header';
@@ -15,6 +15,29 @@ import { Clock, MapPin, User, Award, ArrowLeft, Calendar, BookOpen, Target, Prin
 import { motion } from 'framer-motion';
 import { fetchCourseBySlug, Course } from '@/lib/api';
 
+interface LocationDate {
+  location: string;
+  date: string;
+}
+
+// Parse location/date JSON or return as simple string
+function parseLocationDates(location: string | null, courseDate: string | null): LocationDate[] {
+  if (!location) {
+    return [{ location: 'Online', date: courseDate || 'A informar' }];
+  }
+  
+  try {
+    const parsed = JSON.parse(location);
+    if (Array.isArray(parsed)) {
+      return parsed;
+    }
+  } catch {
+    // Not JSON, return as simple location/date pair
+  }
+  
+  return [{ location: location, date: courseDate || 'A informar' }];
+}
+
 export default function CursoDetalhe() {
   const { slug } = useParams();
   const { data: course, isLoading } = useQuery<Course | null>({
@@ -23,6 +46,12 @@ export default function CursoDetalhe() {
     enabled: !!slug,
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Parse location and dates
+  const locationDates = useMemo(() => {
+    if (!course) return [];
+    return parseLocationDates(course.location, course.course_date);
+  }, [course]);
 
   // Scroll to top when component mounts or slug changes
   useEffect(() => {
@@ -156,29 +185,15 @@ export default function CursoDetalhe() {
                   <CardContent className="pt-6 pb-4">
                     <div className="flex items-start gap-3">
                       <Calendar className="w-8 h-8 text-primary flex-shrink-0" />
-                      <div>
-                        <p className="text-xs text-muted-foreground mb-1">Local e Data</p>
-                        <div className="space-y-2">
-                          <div className="text-sm">
-                            <p className="font-semibold">
-                              <EditableCourseField
-                                courseId={course.id}
-                                field="location"
-                                currentValue={course.location || 'Online'}
-                                as="span"
-                                className="font-semibold"
-                              />
-                            </p>
-                            <p className="text-muted-foreground">
-                              <EditableCourseField
-                                courseId={course.id}
-                                field="course_date"
-                                currentValue={course.course_date || 'A informar'}
-                                as="span"
-                                className="text-muted-foreground"
-                              />
-                            </p>
-                          </div>
+                      <div className="flex-1">
+                        <p className="text-xs text-muted-foreground mb-2">Local e Data</p>
+                        <div className="space-y-3">
+                          {locationDates.map((item, index) => (
+                            <div key={index} className="text-sm border-l-2 border-primary/30 pl-3">
+                              <p className="font-semibold text-foreground">{item.location}</p>
+                              <p className="text-muted-foreground text-xs">{item.date}</p>
+                            </div>
+                          ))}
                         </div>
                       </div>
                     </div>
